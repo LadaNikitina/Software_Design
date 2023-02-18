@@ -1,3 +1,6 @@
+# Диаграмма
+![](https://github.com/LadaNikitina/CLI/blob/main/Диаграмма.png)
+
 # Описание диаграммы
 
 ## Обозначения
