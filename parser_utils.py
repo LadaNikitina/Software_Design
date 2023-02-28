@@ -8,16 +8,17 @@ class AbstractCommand():
         self.name = name
         self.args = args
     
+'Класс парсера'
 class Parser():
     def __init__(self):
         self.commands = []
         self.environment_variables = []
         self.res = []
 
-    def p_command(self, input):
-        '''Command : Environments_init
+    '''Command : Environments_init
                     | Command_pipeline
                     | Single_command'''
+    def p_command(self, input):
         if len(input) == 0:
             return True
         if self.p_environments_init(input):
@@ -28,9 +29,9 @@ class Parser():
             return True
         return False
     
-    def p_environments_init(self, input):
-        '''Environments_init : Environment_init
+    '''Environments_init : Environment_init
                             |  Environment_init Environments_init'''
+    def p_environments_init(self, input):
         if len(input) == 0:
             return True
         if self.p_environment_init(input):
@@ -44,9 +45,9 @@ class Parser():
                     return False
         return False
 
-    def p_environment_init(self, input):
-        '''Environment_init : VAR ASSIGNMENT VALUE
+    '''Environment_init : VAR ASSIGNMENT VALUE
                             | VAR ASSIGNMENT VAR'''
+    def p_environment_init(self, input):
         if len(input) != 3:
             return False
         if input[0].token_type == Token_types.var and input[1].token_type == Token_types.assignment and input[2].token_type == Token_types.value:
@@ -59,9 +60,9 @@ class Parser():
             return True
         return False
 
-    def p_command_pipeline(self, input):
-        '''Command_pipeline : Single_command PIPELINE Command_pipeline
+    '''Command_pipeline : Single_command PIPELINE Command_pipeline
                             | Single_command'''
+    def p_command_pipeline(self, input):
         if len(input) == 0:
             return True
         for i in range(len(input)):
@@ -74,8 +75,8 @@ class Parser():
             return True
         return False
         
+    'Single_command : COMMAND Args'
     def p_single_command(self, input):
-        'Single_command : COMMAND Args'
         if len(input) == 0 or input[0].token_type != Token_types.command:
             return False
         
@@ -89,11 +90,11 @@ class Parser():
         self.res += [AbstractCommand(input[0].token_value, args)]
         return True
 
-    def p_args(self, input):
-        '''Args : ARG
+    '''Args : ARG
                 | ARG Args
                 | Environment Args
                 | Environment'''
+    def p_args(self, input):
         if len(input) == 0:
             return (True, [])
 
@@ -123,21 +124,19 @@ class Parser():
         
         return (False, [])
                 
+    'Environment : VAR'
     def p_environment(self, input):
-        'Environment : VAR'
         if len(input) != 1 or input[0].token_type != Token_types.var:
             return (False, None)
         if not input[0].token_value in self.environment_variables:
             raise exceptions_utils.UnknownVariable()
         return (True, self.environment_variables[input[0].token_value])
 
-    def parse_tokens(self, input):
-        if not self.p_command(input):
-            raise exceptions_utils.ParsingError()
-
+    'Основная функция, которую нужно вызывать для парсинга'
     def parse(self, input, commands, environment_variables):
         self.commands = commands
         self.environment_variables = environment_variables
         self.res = []
-        self.parse_tokens(input)
+        if not self.p_command(input):
+            raise exceptions_utils.ParsingError()
         return (self.res, self.environment_variables)
