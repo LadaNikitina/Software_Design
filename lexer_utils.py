@@ -18,7 +18,7 @@ class Lexer():
             ('command',                      r'^([A-Za-z][\_A-Za-z]+)'),
             ('arg_var_no_quotes',            r'\$([A-Za-z][\_A-Za-z0-9]+)'),
             ('arg_var_quotes',               r'"\$([A-Za-z][\_A-Za-z0-9]+)"'),
-            ('arg_no_quotes',                r'([\_\-A-Za-z.0-9]+)'),
+            ('arg_no_quotes',                r'([^\s"\'\|]+)'),
             ('arg_single_quotes',            r'\'([^\']*)\''),
             ('arg_double_quotes',            r'"([^"]*)"'),
             ('mismatch',                     r'.'),
@@ -73,11 +73,3 @@ class Lexer():
                 all_tokens.append(Token(Token_types.arg, value[1:-1]))            
 #             print(kind, value)
         return all_tokens
-    
-# lexer_obj = Lexer()
-# tokens = lexer_obj.lexer('nc -l 12345 | nc www.google.com 80 | nc www.google.com 80')
-# print("-----------------")
-# for x in tokens:
-#     print(x.token_type, x.token_value)
-# nc -l 12345 | nc www.google.com 80 | nc www.google.com 80'
-# echo ""
