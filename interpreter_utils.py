@@ -32,7 +32,10 @@ class Interpreter():
 
 
 class AbstractCommand:
-    name = "command"
+    def __init__(self, name, args):
+        self.name = name
+        self.args = args
+
     def execute(self):
         print("successfully executed command")
         return "result"
