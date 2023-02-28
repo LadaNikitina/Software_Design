@@ -15,3 +15,9 @@ class InvalidCommand(InterpreterException):
 
 class UnexpectedSymbol(InterpreterException):
     message = colored("ERROR: found unexpected symbol", 'red')
+
+class UnknownVariable(InterpreterException):
+    message = colored("ERROR: found unknown environment variable", 'red')
+
+class ParsingError(InterpreterException):
+    message = colored("ERROR: found unknown environment variable", 'red')
