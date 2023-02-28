@@ -1,5 +1,18 @@
 from enum import Enum
 
+# TODO
+tokens = [
+  'NAME_COMMAND',
+  'ARG',
+  'EQUALITY',
+  'DOLLAR',
+  'VAR',
+  'VALUE',
+  'SINGLE_QUOTES',
+  'DOUBLE_QUOTES',
+  'PIPELINE'
+]
+
 Token_types = Enum('Token_types', [
                              'command',       # команда
                              'arg',           # аргумент
