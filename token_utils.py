@@ -19,5 +19,11 @@ class Token():
         self.token_type = token_type
         self.token_value = token_value
         
+    def __eq__(self, other):
+        if not isinstance(other, Token):
+            return False
+        return self.token_type == other.token_type and \
+               self.token_value == other.token_value
+        
 # пример
-# example_token = Token(Token_types.equality, '=')
+# example_token = Token(Token_types.assignment, '=')
