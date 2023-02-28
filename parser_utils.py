@@ -1,67 +1,127 @@
-import ply.yacc as yacc #Брала отсюда: https://github.com/dabeaz/ply
 from interpreter_utils import AbstractCommand
-from token_utils import tokens
+from token_utils import Token_types
 
 class Parser:
     def __init__(self):
-        def p_command(p):
-            '''Command : Single_command_args
-                        | Single_command
-                        | Command_pipeline
-                        | Environment_init Command
-                        | Environment Command'''
+        self.commands = []
+        self.environment_variables = []
+        self.res = []
+
+    def p_command(self, input):
+        '''Command : Single_command
+                    | Environments_init
+                    | Command_pipeline'''
+        if len(input) == 0:
+            return True
+        if self.p_single_command(input):
+            return True
+        if self.p_environments_init(input):
+            return True
+        if self.p_command_pipeline(input):
+            return True
+        return False
+    
+    def p_environments_init(self, input):
+        '''Environments_init : Environment_init
+                            |  Environment_init Environments_init'''
+        if len(input) == 0:
+            return True
+        if self.p_environment_init(input):
+            return True
         
-        def p_command_pipeline(p):
-            '''Command_pipeline : Single_command_args PIPELINE Command_pipeline
-                                | Single_command PIPELINE Command_pipeline
-                                | Single_command'''
+        for i in range(len(input)):
+            if input[i].token_type == Token_types.value:
+                if self.p_environment_init(input[:i+1]) and self.p_environments_init(input[i+1:]):
+                    return True
+                else:
+                    return False
+        return False
+
+    def p_environment_init(self, input):
+        'Environment_init : VAR EQUALITY VALUE'
+        if len(input) != 3:
+            return False
+        if input[0].token_type == Token_types.var and input[1].token_type == Token_types.equality and input[2].token_type == Token_types.value:
+            self.environment_variables[input[0].token_value] = [input[2].token_value]
+            return True
+        return False
+
+    def p_command_pipeline(self, input):
+        '''Command_pipeline : Single_command
+                            | Single_command PIPELINE Command_pipeline'''
+        if len(input) == 0:
+            return True
+        if self.p_single_command(input):
+            return True
+        for i in range(len(input)):
+            if input[i].token_type == Token_types.pipeline:
+                if self.p_single_command(input[:i]) and self.p_command_pipeline(input[i+1:]):
+                    return True
+                else:
+                    return False
+        return False
         
-        def p_single_command_args(p):
-            'Single_command_args : NAME_COMMAND Args'
-            if not p[1] in self.parser.commands:
-                raise Exception("InvalidCommand") # TODO сори, я на винде, у меня не получилось termcolor установить
-            if len(self.parser.args) != self.parser.commands[p[1]].number_of_inputs:
-                raise Exception("InvalidNumberOfArguments") # TODO сори, я на винде, у меня не получилось termcolor установить
-            self.parser.res += [AbstractCommand(p[1], self.parser.args)] # TODO надо там конструктор реализовать
+    def p_single_command(self, input):
+        'Single_command : NAME_COMMAND Args'
+        if len(input) == 0 or input[0].token_type != Token_types.command:
+            return False
+        
+        if not input[0] in self.parser.commands:
+            raise Exception("Invalid command")
+        
+        (fl, args) = self.p_args(input[1:])
+        if not fl:
+            return False
+        
+        self.res += [AbstractCommand(input[0].token_value, args)]
+        return True
 
-        def p_single_command(p):
-            'Single_command : NAME_COMMAND'
-            if not p[1] in self.parser.commands:
-                raise Exception("InvalidCommand") # TODO сори, я на винде, у меня не получилось termcolor установить
-            k = 0
-            if len(self.parser.res) > 0:
-                k = self.parser.res[-1].number_of_outputs
-            if k != self.parser.commands[p[1]].number_of_inputs:
-                raise Exception("InvalidNumberOfArguments") # TODO сори, я на винде, у меня не получилось termcolor установить
-            self.parser.res += [AbstractCommand(p[1], [])] # TODO надо там конструктор реализовать
+    def p_args(self, input):
+        '''Args : ARG
+                | ARG Args
+                | Environment
+                | Environment Args'''
+        if len(input) == 0:
+            return (True, [])
 
-        def p_environment_init(p):
-            'Environment_init : VAR EQUALITY VALUE'
-            self.parser.environment_variables[p[1]] = p[3]
+        if len(input) == 1 and input[0].token_type == Token_types.arg:
+            return (True, [input[0].token_value])
 
-        def p_args(p):
-            '''Args : Arg
-                    | Environment
-                    | Arg Args
-                    | Environment Args'''
+        if input[0].token_type == Token_types.arg:
+            (fl, args) = self.p_args(input[1:])
+            if fl:
+                return (True, [input[0].token_value] + args)
+            return (False, [])
 
-        def p_arg(p):
-            'Arg : ARG'
-            self.parser.args += [p[1]]
+        (fl, arg) = self.p_environment(input)
+        if fl:
+            return (True, [arg])
 
-        def p_environment(p):
-            'Environment : DOLLAR VAR'
-            self.parser.args += [self.parser.environment_variables[p[2]]]
+        for i in range(len(input)):
+            if input[i].token_type == Token_types.var:
+                (fl, arg) = self.p_environment(input[:i+1])
+                if not fl:
+                    return (False, [])
+                (fl, args) = self.p_args(input[i+1:])
+                if fl:
+                    return (True, [arg] + args)
+                else:
+                    return (False, [])
+                
+    def p_environment(self, input):
+        'Environment : DOLLAR VAR'
+        if len(input) != 2 or input[0].token_type != Token_types.dollar or input[1].token_type != Token_types.var:
+            return (False, None)
+        if not input[1].token_value in self.environment_variables:
+            raise Exception("Unknown environment variables")
+        return (True, self.environment_variables[input[1].token_value])
 
-        self.parser = yacc.yacc()
-        self.parser.commands = []
-        self.parser.environment_variables = []
-        self.parser.args = []
-        self.parser.res = []
-
+    def parse_tokens(self, input):
+        if not self.p_command(input):
+            raise Exception("Parse error")
 
     def parse(self, input, commands, environment_variables):
-        self.parser.commands = commands
-        self.parser.environment_variables = environment_variables
-        self.parser.parse(input)
-        return (self.parser.res, self.parser.environment_variables)
+        self.commands = commands
+        self.environment_variables = environment_variables
+        self.parse_tokens(input)
+        return (self.res, self.environment_variables)
