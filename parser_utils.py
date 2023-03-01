@@ -6,7 +6,6 @@ from token_utils import Token_types
 'Класс парсера'
 class Parser():
     def __init__(self):
-        self.commands = []
         self.environment_variables = []
         self.res = []
 
@@ -75,8 +74,8 @@ class Parser():
         if len(input) == 0 or input[0].token_type != Token_types.command:
             return False
         
-        if not input[0].token_value in self.commands:
-            raise exceptions_utils.InvalidCommand()
+        # if not input[0].token_value in self.commands:
+        #     raise exceptions_utils.InvalidCommand() # Мы научились работать с неизвестными командами
         
         (fl, args) = self.p_args(input[1:])
         if not fl:
@@ -128,8 +127,7 @@ class Parser():
         return (True, self.environment_variables[input[0].token_value])
 
     'Основная функция, которую нужно вызывать для парсинга'
-    def parse(self, input, commands, environment_variables):
-        self.commands = commands
+    def parse(self, input, environment_variables):
         self.environment_variables = environment_variables
         self.res = []
         if not self.p_command(input):

@@ -22,24 +22,25 @@ def compare(res1, var1, res2, var2):
             return False
     return True
 
-commands = ['echo', 'cat', 'wc', 'pwd', 'exit'] # там на деле dict должен быть
-
 lexer = Lexer()
 parser = Parser()
 
 def test_1():
-    with pytest.raises(exceptions_utils.InvalidCommand):
-        environment_variables = {}
-        tokens = lexer.lexer('nc -l 12345 | nc www.google.com 80 | nc www.google.com 80')
-        parser.parse(tokens, commands, environment_variables)
-
+    environment_variables = {}
+    right_res = [AbstractCommand('echo', ['2', '1', '1', '1', '1', '2'])]
+    right_var = {'var': '2'}
+    tokens = lexer.lexer('var=2')
+    res, var = parser.parse(tokens, environment_variables)
+    tokens = lexer.lexer('echo $var 1 1 1 1 $var')
+    res, var = parser.parse(tokens, var)
+    assert compare(right_res, right_var, res, var)
 
 def test_2():
     environment_variables = {}
     right_res = [AbstractCommand('echo', ['1'])]
     right_var = []
     tokens = lexer.lexer('echo 1')
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
 def test_3():
@@ -47,21 +48,21 @@ def test_3():
     right_res = [AbstractCommand('echo', [])]
     right_var = []
     tokens = lexer.lexer('echo')
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
 def test_4():
     with pytest.raises(exceptions_utils.UnknownVariable):
         environment_variables = {}
         tokens = lexer.lexer('echo $var')
-        res, var = parser.parse(tokens, commands, environment_variables)
+        res, var = parser.parse(tokens, environment_variables)
 
 def test_5():
     environment_variables = {}
     right_res = [AbstractCommand('echo', ['$var'])]
     right_var = []
     tokens = lexer.lexer("echo '$var'")
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
 
@@ -70,14 +71,14 @@ def test_6():
     right_res = [AbstractCommand('exit', [])]
     right_var = []
     tokens = lexer.lexer("exit")
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
 def test_7():
     with pytest.raises(exceptions_utils.UnknownVariable):
         environment_variables = {}
         tokens = lexer.lexer('echo 23 434 "454" "$dff"')
-        res, var = parser.parse(tokens, commands, environment_variables)
+        res, var = parser.parse(tokens, environment_variables)
 
 
 def test_8():
@@ -85,7 +86,7 @@ def test_8():
     right_res = [AbstractCommand('pwd', [])]
     right_var = []
     tokens = lexer.lexer('pwd')
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
 
@@ -94,7 +95,7 @@ def test_9():
     right_res = [AbstractCommand('cat', ['/home/sergiy/tmp/file1'])]
     right_var = []
     tokens = lexer.lexer('cat /home/sergiy/tmp/file1')
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
 
@@ -103,7 +104,7 @@ def test_10():
     right_res = [AbstractCommand('cat', ['C:\\Users\\daled\\Downloads\\file\\baseline'])]
     right_var = []
     tokens = lexer.lexer('cat C:\\Users\\daled\\Downloads\\file\\baseline')
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
 
@@ -112,7 +113,7 @@ def test_11():
     right_res = [AbstractCommand('wc', ['/home/sergiy/tmp/file1'])]
     right_var = []
     tokens = lexer.lexer('wc /home/sergiy/tmp/file1')
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
 
@@ -121,7 +122,7 @@ def test_12():
     right_res = [AbstractCommand('wc', ['C:\\Users\\daled\\Downloads\\file\\baseline'])]
     right_var = []
     tokens = lexer.lexer('wc C:\\Users\\daled\\Downloads\\file\\baseline')
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
 
@@ -130,14 +131,14 @@ def test_13():
     right_res = []
     right_var = {'var': '3'}
     tokens = lexer.lexer('var=3')
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
 def test_14():
     with pytest.raises(exceptions_utils.UnknownVariable):
         environment_variables = {}
         tokens = lexer.lexer("var=$var1")
-        res, var = parser.parse(tokens, commands, environment_variables)
+        res, var = parser.parse(tokens, environment_variables)
 
 
 def test_15():
@@ -145,7 +146,7 @@ def test_15():
     right_res = []
     right_var = {'var': '$var1'}
     tokens = lexer.lexer("var='$var1'")
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
 
@@ -153,14 +154,15 @@ def test_16():
     with pytest.raises(exceptions_utils.UnknownVariable):
         environment_variables = {}
         tokens = lexer.lexer('var="$var1"')
-        res, var = parser.parse(tokens, commands, environment_variables)
-
+        res, var = parser.parse(tokens, environment_variables)
 
 def test_17():
-    with pytest.raises(exceptions_utils.InvalidCommand):
-        environment_variables = {}
-        tokens = lexer.lexer('ls -l | grep "\.txt$"')
-        parser.parse(tokens, commands, environment_variables)
+    environment_variables = {}
+    right_res = [AbstractCommand('ls', ['-l']), AbstractCommand('grep', ['\.txt$'])]
+    right_var = {}
+    tokens = lexer.lexer('ls -l | grep "\.txt$"')
+    res, var = parser.parse(tokens, environment_variables)
+    assert compare(right_res, right_var, res, var)
 
 
 def test_18():
@@ -168,7 +170,7 @@ def test_18():
     right_res = [AbstractCommand('echo', ['1'])]
     right_var = {}
     tokens = lexer.lexer('echo 1 | 45 67')
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
 
@@ -177,7 +179,7 @@ def test_19():
     right_res = []
     right_var = {'var': '5'}
     tokens = lexer.lexer('var=5 echo 1')
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
     
@@ -186,9 +188,9 @@ def test_20():
     right_res = [AbstractCommand('echo', ['1'])]
     right_var = {'var': '1'}
     tokens = lexer.lexer('var=1')
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     tokens = lexer.lexer('echo $var')
-    res, var = parser.parse(tokens, commands, var)
+    res, var = parser.parse(tokens, var)
     assert compare(right_res, right_var, res, var)
 
 
@@ -197,7 +199,7 @@ def test_21():
     right_res = [AbstractCommand('echo', ['123']), AbstractCommand('wc', [])]
     right_var = {}
     tokens = lexer.lexer('echo 123 | wc')
-    res, var = parser.parse(tokens, commands, environment_variables)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
 
 
@@ -206,16 +208,5 @@ def test_22():
     right_res = [AbstractCommand('echo', ['1', '1', '1', '1', '1'])]
     right_var = {}
     tokens = lexer.lexer('echo 1 1 1 1 1')
-    res, var = parser.parse(tokens, commands, environment_variables)
-    assert compare(right_res, right_var, res, var)
-
-
-def test_23():
-    environment_variables = {}
-    right_res = [AbstractCommand('echo', ['2', '1', '1', '1', '1', '2'])]
-    right_var = {'var': '2'}
-    tokens = lexer.lexer('var=2')
-    res, var = parser.parse(tokens, commands, environment_variables)
-    tokens = lexer.lexer('echo $var 1 1 1 1 $var')
-    res, var = parser.parse(tokens, commands, var)
+    res, var = parser.parse(tokens, environment_variables)
     assert compare(right_res, right_var, res, var)
