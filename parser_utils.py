@@ -1,12 +1,7 @@
-#from interpreter_utils import AbstractCommand TODO
+from command_utils import AbstractCommand
 import exceptions_utils
 from token_utils import Token_types
 
-# TODO надо удалить, когда реализован будет
-class AbstractCommand():
-    def __init__(self, name, args):
-        self.name = name
-        self.args = args
     
 'Класс парсера'
 class Parser():
@@ -139,4 +134,4 @@ class Parser():
         self.res = []
         if not self.p_command(input):
             raise exceptions_utils.ParsingError()
-        return (self.res, self.environment_variables)
+        return self.res, self.environment_variables

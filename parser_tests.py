@@ -1,7 +1,8 @@
 from parser_utils import Parser
-from parser_utils import AbstractCommand # TODO
+from command_utils import AbstractCommand
 from lexer_utils import Lexer
 import exceptions_utils
+import pytest
 
 def compare(res1, var1, res2, var2):
     if len(res1) != len(res2) or len(var1) != len(var2):
@@ -26,207 +27,195 @@ commands = ['echo', 'cat', 'wc', 'pwd', 'exit'] # там на деле dict до
 lexer = Lexer()
 parser = Parser()
 
-print("\nTEST1")
-environment_variables = {}
-tokens = lexer.lexer('nc -l 12345 | nc www.google.com 80 | nc www.google.com 80')
-try:
-    parser.parse(tokens, commands, environment_variables)
-except exceptions_utils.InvalidCommand:
-    print("Pass")
+def test_1():
+    with pytest.raises(exceptions_utils.InvalidCommand):
+        environment_variables = {}
+        tokens = lexer.lexer('nc -l 12345 | nc www.google.com 80 | nc www.google.com 80')
+        parser.parse(tokens, commands, environment_variables)
 
-print("\nTEST2")
-environment_variables = {}
-right_res = [AbstractCommand('echo', ['1'])]
-right_var = []
-tokens = lexer.lexer('echo 1')
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
 
-print("\nTEST3")
-environment_variables = {}
-right_res = [AbstractCommand('echo', [])]
-right_var = []
-tokens = lexer.lexer('echo')
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
-
-print("\nTEST4")
-environment_variables = {}
-tokens = lexer.lexer('echo $var')
-try:
+def test_2():
+    environment_variables = {}
+    right_res = [AbstractCommand('echo', ['1'])]
+    right_var = []
+    tokens = lexer.lexer('echo 1')
     res, var = parser.parse(tokens, commands, environment_variables)
-except exceptions_utils.UnknownVariable:
-    print("Pass")
+    assert compare(right_res, right_var, res, var)
 
-print("\nTEST5")
-environment_variables = {}
-right_res = [AbstractCommand('echo', ['$var'])]
-right_var = []
-tokens = lexer.lexer("echo '$var'")
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
-
-print("\nTEST6")
-environment_variables = {}
-right_res = [AbstractCommand('exit', [])]
-right_var = []
-tokens = lexer.lexer("exit")
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
-
-print("\nTEST7")
-environment_variables = {}
-tokens = lexer.lexer('echo 23 434 "454" "$dff"')
-try:
+def test_3():
+    environment_variables = {}
+    right_res = [AbstractCommand('echo', [])]
+    right_var = []
+    tokens = lexer.lexer('echo')
     res, var = parser.parse(tokens, commands, environment_variables)
-except exceptions_utils.UnknownVariable:
-    print("Pass")
+    assert compare(right_res, right_var, res, var)
 
-print("\nTEST8")
-environment_variables = {}
-right_res = [AbstractCommand('pwd', [])]
-right_var = []
-tokens = lexer.lexer('pwd')
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
+def test_4():
+    with pytest.raises(exceptions_utils.UnknownVariable):
+        environment_variables = {}
+        tokens = lexer.lexer('echo $var')
+        res, var = parser.parse(tokens, commands, environment_variables)
 
-print("\nTEST9")
-environment_variables = {}
-right_res = [AbstractCommand('cat', ['/home/sergiy/tmp/file1'])]
-right_var = []
-tokens = lexer.lexer('cat /home/sergiy/tmp/file1')
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
-
-print("\nTEST10")
-environment_variables = {}
-right_res = [AbstractCommand('cat', ['C:\\Users\\daled\\Downloads\\file\\baseline'])]
-right_var = []
-tokens = lexer.lexer('cat C:\\Users\\daled\\Downloads\\file\\baseline')
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
-
-print("\nTEST11")
-environment_variables = {}
-right_res = [AbstractCommand('wc', ['/home/sergiy/tmp/file1'])]
-right_var = []
-tokens = lexer.lexer('wc /home/sergiy/tmp/file1')
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
-
-print("\nTEST12")
-environment_variables = {}
-right_res = [AbstractCommand('wc', ['C:\\Users\\daled\\Downloads\\file\\baseline'])]
-right_var = []
-tokens = lexer.lexer('wc C:\\Users\\daled\\Downloads\\file\\baseline')
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
-
-print("\nTEST13")
-environment_variables = {}
-right_res = []
-right_var = {'var': '3'}
-tokens = lexer.lexer('var=3')
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
-
-print("\nTEST14")
-environment_variables = {}
-tokens = lexer.lexer("var=$var1")
-try:
+def test_5():
+    environment_variables = {}
+    right_res = [AbstractCommand('echo', ['$var'])]
+    right_var = []
+    tokens = lexer.lexer("echo '$var'")
     res, var = parser.parse(tokens, commands, environment_variables)
-except exceptions_utils.UnknownVariable:
-    print("Pass")
+    assert compare(right_res, right_var, res, var)
 
-print("\nTEST15")
-environment_variables = {}
-right_res = []
-right_var = {'var': '$var1'}
-tokens = lexer.lexer("var='$var1'")
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
 
-print("\nTEST16")
-environment_variables = {}
-tokens = lexer.lexer('var="$var1"')
-try:
+def test_6():
+    environment_variables = {}
+    right_res = [AbstractCommand('exit', [])]
+    right_var = []
+    tokens = lexer.lexer("exit")
     res, var = parser.parse(tokens, commands, environment_variables)
-except exceptions_utils.UnknownVariable:
-    print("Pass")
+    assert compare(right_res, right_var, res, var)
 
-print("\nTEST17")
-environment_variables = {}
-tokens = lexer.lexer('ls -l | grep "\.txt$"')
-try:
-    parser.parse(tokens, commands, environment_variables)
-except exceptions_utils.InvalidCommand:
-    print("Pass")
+def test_7():
+    with pytest.raises(exceptions_utils.UnknownVariable):
+        environment_variables = {}
+        tokens = lexer.lexer('echo 23 434 "454" "$dff"')
+        res, var = parser.parse(tokens, commands, environment_variables)
 
-print("\nTEST18")
-environment_variables = {}
-right_res = [AbstractCommand('echo', ['1'])]
-right_var = {}
-tokens = lexer.lexer('echo 1 | 45 67')
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
 
-print("\nTEST19")
-environment_variables = {}
-right_res = []
-right_var = {'var': '5'}
-tokens = lexer.lexer('var=5 echo 1')
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
+def test_8():
+    environment_variables = {}
+    right_res = [AbstractCommand('pwd', [])]
+    right_var = []
+    tokens = lexer.lexer('pwd')
+    res, var = parser.parse(tokens, commands, environment_variables)
+    assert compare(right_res, right_var, res, var)
+
+
+def test_9():
+    environment_variables = {}
+    right_res = [AbstractCommand('cat', ['/home/sergiy/tmp/file1'])]
+    right_var = []
+    tokens = lexer.lexer('cat /home/sergiy/tmp/file1')
+    res, var = parser.parse(tokens, commands, environment_variables)
+    assert compare(right_res, right_var, res, var)
+
+
+def test_10():
+    environment_variables = {}
+    right_res = [AbstractCommand('cat', ['C:\\Users\\daled\\Downloads\\file\\baseline'])]
+    right_var = []
+    tokens = lexer.lexer('cat C:\\Users\\daled\\Downloads\\file\\baseline')
+    res, var = parser.parse(tokens, commands, environment_variables)
+    assert compare(right_res, right_var, res, var)
+
+
+def test_11():
+    environment_variables = {}
+    right_res = [AbstractCommand('wc', ['/home/sergiy/tmp/file1'])]
+    right_var = []
+    tokens = lexer.lexer('wc /home/sergiy/tmp/file1')
+    res, var = parser.parse(tokens, commands, environment_variables)
+    assert compare(right_res, right_var, res, var)
+
+
+def test_12():
+    environment_variables = {}
+    right_res = [AbstractCommand('wc', ['C:\\Users\\daled\\Downloads\\file\\baseline'])]
+    right_var = []
+    tokens = lexer.lexer('wc C:\\Users\\daled\\Downloads\\file\\baseline')
+    res, var = parser.parse(tokens, commands, environment_variables)
+    assert compare(right_res, right_var, res, var)
+
+
+def test_13():
+    environment_variables = {}
+    right_res = []
+    right_var = {'var': '3'}
+    tokens = lexer.lexer('var=3')
+    res, var = parser.parse(tokens, commands, environment_variables)
+    assert compare(right_res, right_var, res, var)
+
+def test_14():
+    with pytest.raises(exceptions_utils.UnknownVariable):
+        environment_variables = {}
+        tokens = lexer.lexer("var=$var1")
+        res, var = parser.parse(tokens, commands, environment_variables)
+
+
+def test_15():
+    environment_variables = {}
+    right_res = []
+    right_var = {'var': '$var1'}
+    tokens = lexer.lexer("var='$var1'")
+    res, var = parser.parse(tokens, commands, environment_variables)
+    assert compare(right_res, right_var, res, var)
+
+
+def test_16():
+    with pytest.raises(exceptions_utils.UnknownVariable):
+        environment_variables = {}
+        tokens = lexer.lexer('var="$var1"')
+        res, var = parser.parse(tokens, commands, environment_variables)
+
+
+def test_17():
+    with pytest.raises(exceptions_utils.InvalidCommand):
+        environment_variables = {}
+        tokens = lexer.lexer('ls -l | grep "\.txt$"')
+        parser.parse(tokens, commands, environment_variables)
+
+
+def test_18():
+    environment_variables = {}
+    right_res = [AbstractCommand('echo', ['1'])]
+    right_var = {}
+    tokens = lexer.lexer('echo 1 | 45 67')
+    res, var = parser.parse(tokens, commands, environment_variables)
+    assert compare(right_res, right_var, res, var)
+
+
+def test_19():
+    environment_variables = {}
+    right_res = []
+    right_var = {'var': '5'}
+    tokens = lexer.lexer('var=5 echo 1')
+    res, var = parser.parse(tokens, commands, environment_variables)
+    assert compare(right_res, right_var, res, var)
+
     
-print("\nTEST20")
-environment_variables = {}
-right_res = [AbstractCommand('echo', ['1'])]
-right_var = {'var': '1'}
-tokens = lexer.lexer('var=1')
-res, var = parser.parse(tokens, commands, environment_variables)
-tokens = lexer.lexer('echo $var')
-res, var = parser.parse(tokens, commands, var)
-assert compare(right_res, right_var, res, var)
-print("Pass")
+def test_20():
+    environment_variables = {}
+    right_res = [AbstractCommand('echo', ['1'])]
+    right_var = {'var': '1'}
+    tokens = lexer.lexer('var=1')
+    res, var = parser.parse(tokens, commands, environment_variables)
+    tokens = lexer.lexer('echo $var')
+    res, var = parser.parse(tokens, commands, var)
+    assert compare(right_res, right_var, res, var)
 
-print("\nTEST21")
-environment_variables = {}
-right_res = [AbstractCommand('echo', ['123']), AbstractCommand('wc', [])]
-right_var = {}
-tokens = lexer.lexer('echo 123 | wc')
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
 
-print("\nTEST22")
-environment_variables = {}
-right_res = [AbstractCommand('echo', ['1', '1', '1', '1', '1'])]
-right_var = {}
-tokens = lexer.lexer('echo 1 1 1 1 1')
-res, var = parser.parse(tokens, commands, environment_variables)
-assert compare(right_res, right_var, res, var)
-print("Pass")
+def test_21():
+    environment_variables = {}
+    right_res = [AbstractCommand('echo', ['123']), AbstractCommand('wc', [])]
+    right_var = {}
+    tokens = lexer.lexer('echo 123 | wc')
+    res, var = parser.parse(tokens, commands, environment_variables)
+    assert compare(right_res, right_var, res, var)
 
-print("\nTEST23")
-environment_variables = {}
-right_res = [AbstractCommand('echo', ['2', '1', '1', '1', '1', '2'])]
-right_var = {'var': '2'}
-tokens = lexer.lexer('var=2')
-res, var = parser.parse(tokens, commands, environment_variables)
-tokens = lexer.lexer('echo $var 1 1 1 1 $var')
-res, var = parser.parse(tokens, commands, var)
-assert compare(right_res, right_var, res, var)
-print("Pass")
+
+def test_22():
+    environment_variables = {}
+    right_res = [AbstractCommand('echo', ['1', '1', '1', '1', '1'])]
+    right_var = {}
+    tokens = lexer.lexer('echo 1 1 1 1 1')
+    res, var = parser.parse(tokens, commands, environment_variables)
+    assert compare(right_res, right_var, res, var)
+
+
+def test_23():
+    environment_variables = {}
+    right_res = [AbstractCommand('echo', ['2', '1', '1', '1', '1', '2'])]
+    right_var = {'var': '2'}
+    tokens = lexer.lexer('var=2')
+    res, var = parser.parse(tokens, commands, environment_variables)
+    tokens = lexer.lexer('echo $var 1 1 1 1 $var')
+    res, var = parser.parse(tokens, commands, var)
+    assert compare(right_res, right_var, res, var)
