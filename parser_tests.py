@@ -4,6 +4,7 @@ from lexer_utils import Lexer
 import exceptions_utils
 import pytest
 
+
 def compare(res1, var1, res2, var2):
     if len(res1) != len(res2) or len(var1) != len(var2):
         return False
@@ -22,10 +23,12 @@ def compare(res1, var1, res2, var2):
             return False
     return True
 
-commands = ['echo', 'cat', 'wc', 'pwd', 'exit'] # там на деле dict должен быть
+
+commands = ['echo', 'cat', 'wc', 'pwd', 'exit']  # там на деле dict должен быть
 
 lexer = Lexer()
 parser = Parser()
+
 
 def test_1():
     with pytest.raises(exceptions_utils.InvalidCommand):
@@ -42,6 +45,7 @@ def test_2():
     res, var = parser.parse(tokens, commands, environment_variables)
     assert compare(right_res, right_var, res, var)
 
+
 def test_3():
     environment_variables = {}
     right_res = [AbstractCommand('echo', [])]
@@ -50,11 +54,13 @@ def test_3():
     res, var = parser.parse(tokens, commands, environment_variables)
     assert compare(right_res, right_var, res, var)
 
+
 def test_4():
     with pytest.raises(exceptions_utils.UnknownVariable):
         environment_variables = {}
         tokens = lexer.lexer('echo $var')
         res, var = parser.parse(tokens, commands, environment_variables)
+
 
 def test_5():
     environment_variables = {}
@@ -72,6 +78,7 @@ def test_6():
     tokens = lexer.lexer("exit")
     res, var = parser.parse(tokens, commands, environment_variables)
     assert compare(right_res, right_var, res, var)
+
 
 def test_7():
     with pytest.raises(exceptions_utils.UnknownVariable):
@@ -133,6 +140,7 @@ def test_13():
     res, var = parser.parse(tokens, commands, environment_variables)
     assert compare(right_res, right_var, res, var)
 
+
 def test_14():
     with pytest.raises(exceptions_utils.UnknownVariable):
         environment_variables = {}
@@ -180,7 +188,7 @@ def test_19():
     res, var = parser.parse(tokens, commands, environment_variables)
     assert compare(right_res, right_var, res, var)
 
-    
+
 def test_20():
     environment_variables = {}
     right_res = [AbstractCommand('echo', ['1'])]
