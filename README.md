@@ -13,8 +13,6 @@
 
 Методы класса:
 
-- add_worker(worker: RepairWorker) -> None - добавление рабочего в ремонтную зону
-- remove_worker(worker: RepairWorker) -> None - удаление рабочего из ремонтной зоны
 - add_location(location: RepairLocation) -> None - добавление ремонтного места в ремонтную зону
 - remove_location(location: RepairLocation) -> None - удаление ремонтного места из ремонтной зоны
 - add_car(car: Car) -> None - добавление автомобиля в ремонтную зону
