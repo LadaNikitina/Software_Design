@@ -104,7 +104,32 @@
 - add_repair(repair: Repair) -> None - добавление ремонта автомобиля
 - remove_repair(repair: Repair) -> None - удаление ремонта автомобиля
 
-8. 
+8. Класс ConveyorSection:
+Этот класс представляет собой участок конвейера. Атрибуты класса:
+
+- id: int - уникальный идентификатор конвейера
+- repair_zones: List[RepairZone] - список зон конвейера
+
+Методы класса:
+
+- add_repair_zone(repair_zone: RepairZone) -> None - добавление зоны ремонта
+- remove_repair_zone(repair_zone: RepairZone) -> None - удаление зоны ремонта
+
+9. Класс RepairStat:
+Этот класс представляет собой общую информацию о заводе по части дефектов. Атрибуты класса:
+
+- repairs: List[Repair] - список ремонтов
+- repair_teams: List[RepairTeam] - список ремонтных бригад
+- conveyor_sections: List[ConveyorSection] - список участков конвейера
+
+Методы класса:
+
+- add_repair(repair: Repair) -> None - добавление ремонта
+- remove_repair(repair: Repair) -> None - удаление ремонта
+- add_repair_team(repair_team: RepairTeam) -> None - добавление рабочей бригады
+- remove_repair_team(repair_team: RepairTeam) -> None - удаление рабочей бригады
+- add_conveyor(conveyor_section: ConveyorSection) -> None - добавление участка конвейера
+- remove_conveyor(conveyor_section: ConveyorSection) -> None - удаление участка конвейера
 
 # 2. Диаграмма компонентов требуемой системы
 # 3. Диаграмма развёртывания
