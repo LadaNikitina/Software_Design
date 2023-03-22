@@ -95,8 +95,10 @@
 - defects: List[Defect] - список дефектов автомобиля
 - repairs: List[Repair] - список ремонтов автомобиля
 - repair_report: RepairReport - отчет о ремонте автомобиля
-- repair_location: RepairLocation - место, где находится автомобиль для ремонта
+- repair_location: RepairLocation - место для ремонта, где находится автомобиль
+
 Методы класса:
+
 - add_defect(defect: Defect) -> None - добавление дефекта автомобиля
 - remove_defect(defect: Defect) -> None - удаление дефекта автомобиля
 - add_repair(repair: Repair) -> None - добавление ремонта автомобиля
