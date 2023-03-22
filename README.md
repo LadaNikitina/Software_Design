@@ -39,7 +39,9 @@
 - name: str - название ремонтной бригады
 - leader: RepairWorker - бригадир, ответственный за работу бригады
 - workers: List[RepairWorker] - список рабочих, работающих в бригаде
+
 Методы класса:
+
 - add_worker(worker: RepairWorker) -> None - добавление рабочего в бригаду
 - remove_worker(worker: RepairWorker) -> None - удаление рабочего из бригады
 
@@ -50,7 +52,9 @@
 - available: bool - флаг, указывающий на доступность рабочего для выполнения работ
 - team: RepairTeam - бригада, в которой работает рабочий
 - repairs: List[Repair] - список ремонтов, которые назначены на рабочего
+
 Методы класса:
+
 - assign_repair(repair: Repair) -> None - назначение ремонта на рабочего
 - start_repair(repair: Repair) -> None - начало выполнения ремонта рабочим
 - finish_repair(repair: Repair) -> None - окончание выполнения ремонта рабочим
