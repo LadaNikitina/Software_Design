@@ -95,8 +95,6 @@
 - id: int - уникальный идентификатор автомобиля
 - defects: List[Defect] - список дефектов автомобиля
 - repairs: List[Repair] - список ремонтов автомобиля
-- repair_report: RepairReport - отчет о ремонте автомобиля
-- repair_location: RepairLocation - место для ремонта, где находится автомобиль
 
 Методы класса:
 
