@@ -10,6 +10,7 @@
 - team: RepairTeam - ремонтная бригада, которая обслуживает ремонтную зону
 - locations: List[RepairLocation] - список ремонтных мест в ремонтной зоне
 - cars: List[Car] - список автомобилей, находящихся в ремонтной зоне
+- conveyor_section: ConveyorSection - участок конвейера
 
 Методы класса:
 
