@@ -1,5 +1,5 @@
 # 1. Диаграмма классов
-![](https://github.com/LadaNikitina/CLI/blob/main/Диаграмма_классов.png)
+![](https://github.com/LadaNikitina/CLI/blob/hw4/Диаграмма_классов.png)
 1. Класс RepairZone. Представляет ремонтную зону, в которой происходит ремонт автомобилей.
 
 Атрибуты класса:
