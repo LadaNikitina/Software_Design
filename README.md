@@ -1,5 +1,5 @@
 # 2. Диаграмма конечных автоматов
-![](https://github.com/LadaNikitina/CLI/blob/hw5/*.png)
+![](https://github.com/LadaNikitina/CLI/blob/hw5/Final_State_Diagram.png)
 
 # 3. Временная диаграмма
 Работа микроволновки при разморозке продуктов:
