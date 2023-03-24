@@ -132,5 +132,7 @@
 - remove_conveyor(conveyor_section: ConveyorSection) -> None - удаление участка конвейера
 
 # 2. Диаграмма компонентов требуемой системы
+<img width="652" alt="Снимок экрана 2023-03-24 в 5 13 14" src="https://user-images.githubusercontent.com/57729595/227406950-54e54d6e-3ff7-4de8-b71e-6e76d909b8f3.png">
+
 # 3. Диаграмма развёртывания
 ![](https://github.com/LadaNikitina/CLI/blob/hw4/Диаграмма%20развёртывания.jpg)
