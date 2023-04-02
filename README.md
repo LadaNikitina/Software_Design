@@ -36,7 +36,7 @@
 
 # Диаграмма классов
 
-![](https://github.com/LadaNikitina/CLI/blob/hw6/Classes_diagram.jpg)
+![](https://github.com/LadaNikitina/CLI/blob/hw6/Class_diagram.jpg)
 
 # Композиция
 Под вещью понимаются различные магические артефакты.
