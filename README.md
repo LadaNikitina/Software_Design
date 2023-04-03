@@ -54,8 +54,16 @@
 
 ![](https://github.com/LadaNikitina/CLI/blob/hw6/Class.png)
 
+
 # Композиция
 Под вещью понимаются различные магические артефакты.
 
 
 ![](https://github.com/LadaNikitina/CLI/blob/hw6/Диаграмма%20компонент.jpg)
+
+# Взаимодействия и состояния
+
+## Диаграмма конечных автоматов прохождения уровня игроком
+<img width="898" alt="диаграмма" src="https://user-images.githubusercontent.com/57729595/229638386-a20a235b-8829-4044-995c-e08b092acd24.png">
+
+
