@@ -14,16 +14,18 @@ GREEN = [0, 255, 0]
 
 
 class Map:
-    def __init__(self):
+    def __init__(self, height=60, width=100, p_prickly_vine=10, p_lava=10, mode=0):
         # Эти параметры можно менять
-        self.height = 60
-        self.width = 100
-        self.p_prickly_vine = 10
-        self.p_lava = 10
+        self.mode = mode
+        self.height = height
+        self.width = width
+        self.p_prickly_vine = p_prickly_vine
+        self.p_lava = p_lava
 
         self.tiles = [[]]
         self.itemsOnMap = []
 
+    # Используется рандомизированный алгоритм Прима
     def generateMap(self):
         for h in range(self.height):
             self.tiles.append([])
@@ -139,8 +141,10 @@ class Map:
 
     # mode = 0 -- простая отрисовка в консили символами
     # mode = 1 -- отрисовка цветными квадратиками
-    def drawPieceOfMap(self, centre_x, centre_y, height, width, mode=0):
-        print() # Просто для отступа
+    def drawPieceOfMap(self, centre_x, centre_y, height, width, mode=-1):
+        if mode == -1:
+            mode = self.mode
+
         shift_x = centre_x - height // 2
         shift_y = centre_y - width // 2
 
