@@ -3,4 +3,5 @@ from map import Map
 m = Map()
 m.generateMap()
 m.drawMap()
-m.drawPieceOfMap(0, 100, 20, 20)
+print('\n')
+m.drawPieceOfMap(centre_x=30, centre_y=24, height=20, width=20)

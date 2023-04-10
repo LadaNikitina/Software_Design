@@ -1,28 +1,33 @@
 import random
+import sys
+
 import numpy as np
 import matplotlib.pyplot as plt
-from field import Field
+from field import NOTHING, WALL, PRICKLY_VINE, LAVA
+from item import Poison, Artifact, Treasure
 
-NOTHING = Field(' ')
-WALL = Field('█')
-PRICKLY_VINE = Field('░')
-LAVA = Field('▓')
+CHARACTER = '☺'
 WHITE = [255, 255, 255]
 BLACK = [0, 0, 0]
 RED = [255, 0, 0]
 GREEN = [0, 255, 0]
+ORANGE = [255, 165, 0]
+GREY = [169, 169, 169]
 
 
 class Map:
-    def __init__(self, height=60, width=100, p_prickly_vine=10, p_lava=10, mode=0):
-        # Эти параметры можно менять
-        self.mode = mode
+    def __init__(self, height=60, width=100, p_prickly_vine=10, p_lava=10, k_poison=20, k_artifact=20, k_treasure=7, mode=0):
         self.height = height
         self.width = width
         self.p_prickly_vine = p_prickly_vine
         self.p_lava = p_lava
+        self.k_poison = k_poison
+        self.k_artifact = k_artifact
+        self.k_treasure = k_treasure
+        self.mode = mode
 
         self.tiles = [[]]
+        self.items = {}
         self.itemsOnMap = []
 
     # Используется рандомизированный алгоритм Прима
@@ -133,11 +138,40 @@ class Map:
                 elif random.randint(0, 100) <= self.p_lava:
                     self.tiles[h][w] = LAVA
 
+        # Генерируем вещи
+        while self.k_poison > 0:
+            h = random.randint(0, self.height-1)
+            w = random.randint(0, self.width-1)
+            if self.tiles[h][w] == WALL:
+                continue
+            poison = Poison(h, w)
+            self.items[(h, w)] = poison
+            self.itemsOnMap.append(poison)
+            self.k_poison -= 1
+        while self.k_artifact > 0:
+            h = random.randint(0, self.height-1)
+            w = random.randint(0, self.width-1)
+            if self.tiles[h][w] == WALL:
+                continue
+            artifact = Artifact(h, w)
+            self.items[(h, w)] = artifact
+            self.itemsOnMap.append(artifact)
+            self.k_artifact -= 1
+        while self.k_treasure > 0:
+            h = random.randint(0, self.height-1)
+            w = random.randint(0, self.width-1)
+            if self.tiles[h][w] == WALL:
+                continue
+            treasure = Treasure(h, w)
+            self.items[(h, w)] = treasure
+            self.itemsOnMap.append(treasure)
+            self.k_treasure -= 1
+
     def getField(self, x, y):
         return self.tiles[x][y]
 
     def drawMap(self):
-        self.drawPieceOfMap(self.height // 2, self.width // 2, self.height, self.width)
+        self.drawPieceOfMap(centre_x=self.height // 2, centre_y=self.width // 2, height=self.height, width=self.width)
 
     # mode = 0 -- простая отрисовка в консили символами
     # mode = 1 -- отрисовка цветными квадратиками
@@ -152,11 +186,16 @@ class Map:
             for h in range(height):
                 for w in range(width):
                     if w + shift_y >= self.width or h + shift_x >= self.height or w + shift_y < 0 or h + shift_x < 0:
-                        # Символы довольно узкие и высокие, печатая дважды можно их немного расширить
                         print(' ', end='')
-                        print(' ', end='')
+                    elif h + shift_x == centre_x and w + shift_y == centre_y:
+                        if self.tiles[h + shift_x][w + shift_y] != WALL:
+                            print(CHARACTER, end='')
+                        else:
+                            print("There can't be a hero in the center because there is a wall here!", file=sys.stderr)
+                            print(self.tiles[h + shift_x][w + shift_y].fieldSymbol, end='')
+                    elif (h + shift_x, w + shift_y) in self.items:
+                        print(self.items[(h + shift_x, w + shift_y)].fieldSymbol, end='')
                     else:
-                        print(self.tiles[h + shift_x][w + shift_y].fieldSymbol, end='')
                         print(self.tiles[h + shift_x][w + shift_y].fieldSymbol, end='')
                 print()
             return
@@ -166,6 +205,14 @@ class Map:
                 for w in range(width):
                     if w + shift_y >= self.width or h + shift_x >= self.height or w + shift_y < 0 or h + shift_x < 0:
                         map_color[h][w] = WHITE
+                    elif h + shift_x == centre_x and w + shift_y == centre_y:
+                        if self.tiles[h + shift_x][w + shift_y] != WALL:
+                            map_color[h][w] = ORANGE
+                        else:
+                            print("There can't be a hero in the center because there is a wall here!", file=sys.stderr)
+                            map_color[h][w] = BLACK
+                    elif (h + shift_x, w + shift_y) in self.items:
+                        map_color[h][w] = GREY
                     elif self.tiles[h + shift_x][w + shift_y] == NOTHING:
                         map_color[h][w] = WHITE
                     elif self.tiles[h + shift_x][w + shift_y] == WALL:
