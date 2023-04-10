@@ -5,9 +5,9 @@ class Item:
         self.coordY = coordY
 
 
-POISON = '∇'
+POISON = 'V'
 ARTIFACT = '□'
-TREASURE = '✲'
+TREASURE = '*'
 
 
 class Poison(Item):

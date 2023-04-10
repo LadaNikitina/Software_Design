@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 from field import NOTHING, WALL, PRICKLY_VINE, LAVA
 from item import Poison, Artifact, Treasure
 
-CHARACTER = '☺'
+CHARACTER = 'I'
 WHITE = [255, 255, 255]
 BLACK = [0, 0, 0]
 RED = [255, 0, 0]
 GREEN = [0, 255, 0]
 ORANGE = [255, 165, 0]
-GREY = [169, 169, 169]
+BLUE = [0, 0, 255]
 
 
 class Map:
@@ -207,12 +207,12 @@ class Map:
                         map_color[h][w] = WHITE
                     elif h + shift_x == centre_x and w + shift_y == centre_y:
                         if self.tiles[h + shift_x][w + shift_y] != WALL:
-                            map_color[h][w] = ORANGE
+                            map_color[h][w] = BLUE
                         else:
                             print("There can't be a hero in the center because there is a wall here!", file=sys.stderr)
                             map_color[h][w] = BLACK
                     elif (h + shift_x, w + shift_y) in self.items:
-                        map_color[h][w] = GREY
+                        map_color[h][w] = ORANGE
                     elif self.tiles[h + shift_x][w + shift_y] == NOTHING:
                         map_color[h][w] = WHITE
                     elif self.tiles[h + shift_x][w + shift_y] == WALL:
