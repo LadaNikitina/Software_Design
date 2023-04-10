@@ -3,10 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from field import Field
 
-NOTHING = Field('0')
-WALL = Field('1')
-PRICKLY_VINE = Field('2')
-LAVA = Field('3')
+NOTHING = Field(' ')
+WALL = Field('█')
+PRICKLY_VINE = Field('░')
+LAVA = Field('▓')
 WHITE = [255, 255, 255]
 BLACK = [0, 0, 0]
 RED = [255, 0, 0]
@@ -25,21 +25,21 @@ class Map:
         self.itemsOnMap = []
 
     def generateMap(self):
-        for w in range(self.width):
+        for h in range(self.height):
             self.tiles.append([])
-            for h in range(self.height):
-                self.tiles[w].append(WALL)
-        x = random.randint(0, self.width // 2 - 1) * 2 + 1
-        y = random.randint(0, self.height // 2 - 1) * 2 + 1
+            for w in range(self.width):
+                self.tiles[h].append(WALL)
+        x = random.randint(0, self.height // 2 - 1) * 2 + 1
+        y = random.randint(0, self.width // 2 - 1) * 2 + 1
         self.tiles[x][y] = NOTHING
         to_check = []
         if y - 2 >= 0:
             to_check.append((x, y - 2))
-        if y + 2 < self.height:
+        if y + 2 < self.width:
             to_check.append((x, y + 2))
         if x - 2 >= 0:
             to_check.append((x - 2, y))
-        if x + 2 < self.width:
+        if x + 2 < self.height:
             to_check.append((x + 2, y))
 
         while len(to_check) > 0:
@@ -58,7 +58,7 @@ class Map:
                         self.tiles[x][y - 1] = NOTHING
                         break
                 elif d[dir_index] == 'SOUTH':
-                    if y + 2 < self.height and self.tiles[x][y + 2] == NOTHING:
+                    if y + 2 < self.width and self.tiles[x][y + 2] == NOTHING:
                         self.tiles[x][y + 1] = NOTHING
                         break
                 elif d[dir_index] == 'EAST':
@@ -66,70 +66,70 @@ class Map:
                         self.tiles[x - 1][y] = NOTHING
                         break
                 elif d[dir_index] == 'WEST':
-                    if x + 2 < self.width and self.tiles[x + 2][y] == NOTHING:
+                    if x + 2 < self.height and self.tiles[x + 2][y] == NOTHING:
                         self.tiles[x + 1][y] = NOTHING
                         break
                 d.pop(dir_index)
 
             if y - 2 >= 0 and self.tiles[x][y - 2] == WALL:
                 to_check.append((x, y - 2))
-            if y + 2 < self.height and self.tiles[x][y + 2] == WALL:
+            if y + 2 < self.width and self.tiles[x][y + 2] == WALL:
                 to_check.append((x, y + 2))
             if x - 2 >= 0 and self.tiles[x - 2][y] == WALL:
                 to_check.append((x - 2, y))
-            if x + 2 < self.width and self.tiles[x + 2][y] == WALL:
+            if x + 2 < self.height and self.tiles[x + 2][y] == WALL:
                 to_check.append((x + 2, y))
 
-        for w in range(self.width - 1):
-            if w == 0:
+        for h in range(self.height - 1):
+            if h == 0:
                 continue
-            for h in range(self.height - 1):
-                if h == 0:
+            for w in range(self.width - 1):
+                if w == 0:
                     continue
-                if self.tiles[w][h] == WALL \
-                        and self.tiles[w - 1][h] == NOTHING \
-                        and self.tiles[w][h - 1] == NOTHING \
-                        and self.tiles[w + 1][h] == NOTHING \
-                        and self.tiles[w][h + 1] == NOTHING:
-                    self.tiles[w][h] = NOTHING
+                if self.tiles[h][w] == WALL \
+                        and self.tiles[h][w - 1] == NOTHING \
+                        and self.tiles[h - 1][w] == NOTHING \
+                        and self.tiles[h][w + 1] == NOTHING \
+                        and self.tiles[h + 1][w] == NOTHING:
+                    self.tiles[h][w] = NOTHING
 
         for i in range(4):
             dead_ends = []
             for h in range(self.height):
                 for w in range(self.width):
-                    if self.tiles[w][h] == NOTHING:
+                    if self.tiles[h][w] == NOTHING:
                         neighbors = 0
-                        if h - 1 >= 0 and self.tiles[w][h - 1] == NOTHING:
+                        if h - 1 >= 0 and self.tiles[h - 1][w] == NOTHING:
                             neighbors += 1
-                        if h + 1 < self.height and self.tiles[w][h + 1] == NOTHING:
+                        if h + 1 < self.height and self.tiles[h + 1][w] == NOTHING:
                             neighbors += 1
-                        if w - 1 >= 0 and self.tiles[w - 1][h] == NOTHING:
+                        if w - 1 >= 0 and self.tiles[h][w - 1] == NOTHING:
                             neighbors += 1
-                        if w + 1 < self.width and self.tiles[w + 1][h] == NOTHING:
+                        if w + 1 < self.width and self.tiles[h][w + 1] == NOTHING:
                             neighbors += 1
                         if neighbors <= 1:
-                            dead_ends.append((w, h))
+                            dead_ends.append((h, w))
             for cell in dead_ends:
                 self.tiles[cell[0]][cell[1]] = WALL
         # Здесь заканчивается генерация стен
 
         # Внешние границы делаем стенами
         for w in range(self.width):
-            self.tiles[w][0] = WALL
-            self.tiles[w][self.height - 1] = WALL
+            self.tiles[0][w] = WALL
+            self.tiles[self.height - 1][w] = WALL
         for h in range(self.height):
-            self.tiles[0][h] = WALL
-            self.tiles[self.width - 1][h] = WALL
+            self.tiles[h][0] = WALL
+            self.tiles[h][self.width - 1] = WALL
 
         # С заданной вероятностью генерируем ловушки: колючие лозы и лаву
-        for w in range(self.width):
-            for h in range(self.height):
-                if self.tiles[w][h] != NOTHING:
+        for h in range(self.height):
+            for w in range(self.width):
+                if self.tiles[h][w] != NOTHING:
                     continue
                 if random.randint(0, 100) <= self.p_prickly_vine:
-                    self.tiles[w][h] = PRICKLY_VINE
+                    self.tiles[h][w] = PRICKLY_VINE
                 elif random.randint(0, 100) <= self.p_lava:
-                    self.tiles[w][h] = LAVA
+                    self.tiles[h][w] = LAVA
 
     def getField(self, x, y):
         return self.tiles[x][y]
@@ -137,24 +137,42 @@ class Map:
     def drawMap(self):
         self.drawPieceOfMap(self.height // 2, self.width // 2, self.height, self.width)
 
-    def drawPieceOfMap(self, centre_x, centre_y, height, width):
+    # mode = 0 -- простая отрисовка в консили символами
+    # mode = 1 -- отрисовка цветными квадратиками
+    def drawPieceOfMap(self, centre_x, centre_y, height, width, mode=0):
+        print() # Просто для отступа
         shift_x = centre_x - height // 2
         shift_y = centre_y - width // 2
-        map_color = np.zeros((height, width, 3))
-        for h in range(height):
-            for w in range(width):
-                if w + shift_y >= self.width or h + shift_x >= self.height or w + shift_y < 0 or h + shift_x < 0:
-                    map_color[h][w] = WHITE
-                elif self.tiles[w + shift_y][h + shift_x] == NOTHING:
-                    map_color[h][w] = WHITE
-                elif self.tiles[w + shift_y][h + shift_x] == WALL:
-                    map_color[h][w] = BLACK
-                elif self.tiles[w + shift_y][h + shift_x] == PRICKLY_VINE:
-                    map_color[h][w] = GREEN
-                elif self.tiles[w + shift_y][h + shift_x] == LAVA:
-                    map_color[h][w] = RED
-        plt.imshow(map_color)
-        ax = plt.gca()
-        ax.axes.xaxis.set_visible(False)
-        ax.axes.yaxis.set_visible(False)
-        plt.show()
+
+        if mode == 0:
+            for h in range(height):
+                for w in range(width):
+                    if w + shift_y >= self.width or h + shift_x >= self.height or w + shift_y < 0 or h + shift_x < 0:
+                        # Символы довольно узкие и высокие, печатая дважды можно их немного расширить
+                        print(' ', end='')
+                        print(' ', end='')
+                    else:
+                        print(self.tiles[h + shift_x][w + shift_y].fieldSymbol, end='')
+                        print(self.tiles[h + shift_x][w + shift_y].fieldSymbol, end='')
+                print()
+            return
+        if mode == 1:
+            map_color = np.zeros((height, width, 3))
+            for h in range(height):
+                for w in range(width):
+                    if w + shift_y >= self.width or h + shift_x >= self.height or w + shift_y < 0 or h + shift_x < 0:
+                        map_color[h][w] = WHITE
+                    elif self.tiles[h + shift_x][w + shift_y] == NOTHING:
+                        map_color[h][w] = WHITE
+                    elif self.tiles[h + shift_x][w + shift_y] == WALL:
+                        map_color[h][w] = BLACK
+                    elif self.tiles[h + shift_x][w + shift_y] == PRICKLY_VINE:
+                        map_color[h][w] = GREEN
+                    elif self.tiles[h + shift_x][w + shift_y] == LAVA:
+                        map_color[h][w] = RED
+            plt.imshow(map_color)
+            ax = plt.gca()
+            ax.axes.xaxis.set_visible(False)
+            ax.axes.yaxis.set_visible(False)
+            plt.show()
+            return
