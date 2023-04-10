@@ -2,14 +2,24 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 
-WALL = '█'
-NOTHING = ' '
+NOTHING = 0
+WALL = 1
+PRICKLY_VINE = 2
+LAVA = 3
+WHITE = [255, 255, 255]
+BLACK = [0, 0, 0]
+RED = [255, 0, 0]
+GREEN = [0, 255, 0]
 
 
 class Map:
     def __init__(self):
+        # Эти параметры можно менять
         self.height = 60
-        self.width = 60
+        self.width = 100
+        self.p_prickly_vine = 10
+        self.p_lava = 10
+
         self.tiles = [[]]
         self.itemsOnMap = []
 
@@ -97,7 +107,9 @@ class Map:
                             dead_ends.append((w, h))
             for cell in dead_ends:
                 self.tiles[cell[0]][cell[1]] = WALL
+        # Здесь заканчивается генерация стен
 
+        # Внешние границы делаем стенами
         for w in range(self.width):
             self.tiles[w][0] = WALL
             self.tiles[w][self.height - 1] = WALL
@@ -105,16 +117,39 @@ class Map:
             self.tiles[0][h] = WALL
             self.tiles[self.width - 1][h] = WALL
 
+        # С заданной вероятностью генерируем ловушки: колючие лозы и лаву
+        for w in range(self.width):
+            for h in range(self.height):
+                if self.tiles[w][h] != NOTHING:
+                    continue
+                if random.randint(0, 100) <= self.p_prickly_vine:
+                    self.tiles[w][h] = PRICKLY_VINE
+                elif random.randint(0, 100) <= self.p_lava:
+                    self.tiles[w][h] = LAVA
+
     def getField(self, x, y):
         return self.tiles[x][y]
 
     def drawMap(self):
-        res = np.zeros((self.height, self.height, 3))
-        for h in range(self.height):
-            for w in range(self.width):
-                if self.tiles[w][h] == NOTHING:
-                    res[w][h] = [255, 255, 255]
-        plt.imshow(res)
+        self.drawPieceOfMap(self.height // 2, self.width // 2, self.height, self.width)
+
+    def drawPieceOfMap(self, centre_x, centre_y, height, width):
+        shift_x = centre_x - height // 2
+        shift_y = centre_y - width // 2
+        map_color = np.zeros((height, width, 3))
+        for h in range(height):
+            for w in range(width):
+                if w+shift_y >= self.width or h+shift_x >= self.height or w+shift_y < 0 or h+shift_x < 0:
+                    map_color[h][w] = WHITE
+                elif self.tiles[w+shift_y][h+shift_x] == NOTHING:
+                    map_color[h][w] = WHITE
+                elif self.tiles[w+shift_y][h+shift_x] == WALL:
+                    map_color[h][w] = BLACK
+                elif self.tiles[w+shift_y][h+shift_x] == PRICKLY_VINE:
+                    map_color[h][w] = GREEN
+                elif self.tiles[w+shift_y][h+shift_x] == LAVA:
+                    map_color[h][w] = RED
+        plt.imshow(map_color)
         ax = plt.gca()
         ax.axes.xaxis.set_visible(False)
         ax.axes.yaxis.set_visible(False)
