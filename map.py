@@ -1,11 +1,12 @@
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from field import Field
 
-NOTHING = 0
-WALL = 1
-PRICKLY_VINE = 2
-LAVA = 3
+NOTHING = Field('0')
+WALL = Field('1')
+PRICKLY_VINE = Field('2')
+LAVA = Field('3')
 WHITE = [255, 255, 255]
 BLACK = [0, 0, 0]
 RED = [255, 0, 0]
@@ -85,8 +86,11 @@ class Map:
             for h in range(self.height - 1):
                 if h == 0:
                     continue
-                if self.tiles[w][h] == WALL and self.tiles[w - 1][h] == NOTHING and self.tiles[w][h - 1] == NOTHING and \
-                        self.tiles[w + 1][h] == NOTHING and self.tiles[w][h + 1] == NOTHING:
+                if self.tiles[w][h] == WALL \
+                        and self.tiles[w - 1][h] == NOTHING \
+                        and self.tiles[w][h - 1] == NOTHING \
+                        and self.tiles[w + 1][h] == NOTHING \
+                        and self.tiles[w][h + 1] == NOTHING:
                     self.tiles[w][h] = NOTHING
 
         for i in range(4):
@@ -139,15 +143,15 @@ class Map:
         map_color = np.zeros((height, width, 3))
         for h in range(height):
             for w in range(width):
-                if w+shift_y >= self.width or h+shift_x >= self.height or w+shift_y < 0 or h+shift_x < 0:
+                if w + shift_y >= self.width or h + shift_x >= self.height or w + shift_y < 0 or h + shift_x < 0:
                     map_color[h][w] = WHITE
-                elif self.tiles[w+shift_y][h+shift_x] == NOTHING:
+                elif self.tiles[w + shift_y][h + shift_x] == NOTHING:
                     map_color[h][w] = WHITE
-                elif self.tiles[w+shift_y][h+shift_x] == WALL:
+                elif self.tiles[w + shift_y][h + shift_x] == WALL:
                     map_color[h][w] = BLACK
-                elif self.tiles[w+shift_y][h+shift_x] == PRICKLY_VINE:
+                elif self.tiles[w + shift_y][h + shift_x] == PRICKLY_VINE:
                     map_color[h][w] = GREEN
-                elif self.tiles[w+shift_y][h+shift_x] == LAVA:
+                elif self.tiles[w + shift_y][h + shift_x] == LAVA:
                     map_color[h][w] = RED
         plt.imshow(map_color)
         ax = plt.gca()
