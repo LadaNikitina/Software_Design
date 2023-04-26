@@ -17,6 +17,14 @@ BLUE = [0, 0, 255]
 
 class Map:
     def __init__(self, height=60, width=100, p_prickly_vine=10, p_lava=10, k_poison=20, k_artifact=20, k_treasure=7, mode=0):
+        height = max(height, 4)
+        width = max(width, 4)
+        p_prickly_vine = max(p_prickly_vine, 0)
+        p_lava = max(p_lava, 0)
+        k_poison = max(k_poison, 0)
+        k_artifact = max(k_artifact, 0)
+        k_treasure = max(k_treasure, 1)
+
         self.height = height
         self.width = width
         self.p_prickly_vine = p_prickly_vine
@@ -26,12 +34,15 @@ class Map:
         self.k_treasure = k_treasure
         self.mode = mode
 
-        self.tiles = [[]]
+        self.tiles = []
         self.items = {}
         self.itemsOnMap = []
 
     # Используется рандомизированный алгоритм Прима
     def generateMap(self):
+        self.height -= 2
+        self.width -= 2
+
         for h in range(self.height):
             self.tiles.append([])
             for w in range(self.width):
@@ -51,11 +62,10 @@ class Map:
 
         while len(to_check) > 0:
             index = random.randint(0, len(to_check) - 1)
-            cell = to_check[index]
+            cell = to_check.pop(index)
             x = cell[0]
             y = cell[1]
             self.tiles[x][y] = NOTHING
-            to_check.pop(index)
 
             d = ['NORTH', 'SOUTH', 'EAST', 'WEST']
             while len(d) > 0:
@@ -120,13 +130,17 @@ class Map:
                 self.tiles[cell[0]][cell[1]] = WALL
         # Здесь заканчивается генерация стен
 
-        # Внешние границы делаем стенами
+        # Добавляем внешние границы -- стены
+        up = []
+        down = []
         for w in range(self.width):
-            self.tiles[0][w] = WALL
-            self.tiles[self.height - 1][w] = WALL
+            up.append(WALL)
+            down.append(WALL)
+        self.tiles = [up] + self.tiles + [down]
+        self.height += 2
         for h in range(self.height):
-            self.tiles[h][0] = WALL
-            self.tiles[h][self.width - 1] = WALL
+            self.tiles[h] = [WALL] + self.tiles[h] + [WALL]
+        self.width += 2
 
         # С заданной вероятностью генерируем ловушки: колючие лозы и лаву
         for h in range(self.height):
