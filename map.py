@@ -3,6 +3,8 @@ import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
+
+from enemy import make_mummy, make_grasshopper, make_lost_traveler
 from field import NOTHING, WALL, PRICKLY_VINE, LAVA
 from item import Poison, Artifact, Treasure
 
@@ -13,25 +15,45 @@ RED = [255, 0, 0]
 GREEN = [0, 255, 0]
 ORANGE = [255, 165, 0]
 BLUE = [0, 0, 255]
+PURPLE = [139, 0, 255]
 
 
 class Map:
-    def __init__(self, height=60, width=100, p_prickly_vine=10, p_lava=10, k_poison=20, k_artifact=20, k_treasure=7, mode=0):
+    # Вероятности для врагов должны отличаться в зависимости от уровня, см. описание в hw8
+    def __init__(self, height=60, width=100, p_prickly_vine=10, p_lava=10, p_mummy=0, p_grasshopper=0, p_lost_traveler=0, k_poison=20, k_artifact=20, k_treasure=7, mode=0):
+        height = max(height, 4)
+        width = max(width, 4)
+        p_prickly_vine = max(p_prickly_vine, 0)
+        p_lava = max(p_lava, 0)
+        p_mummy = max(p_mummy, 0)
+        p_grasshopper = max(p_grasshopper, 0)
+        p_lost_traveler = max(p_lost_traveler, 0)
+        k_poison = max(k_poison, 0)
+        k_artifact = max(k_artifact, 0)
+        k_treasure = max(k_treasure, 1)
+
         self.height = height
         self.width = width
         self.p_prickly_vine = p_prickly_vine
         self.p_lava = p_lava
+        self.p_mummy = p_mummy
+        self.p_grasshopper = p_grasshopper
+        self.p_lost_traveler = p_lost_traveler
         self.k_poison = k_poison
         self.k_artifact = k_artifact
         self.k_treasure = k_treasure
         self.mode = mode
 
-        self.tiles = [[]]
+        self.tiles = []
         self.items = {}
         self.itemsOnMap = []
+        self.enemy = [] # Не словарь, потому что будут перемещаться часто, так что просто отрисовываю поверх всех ловушек
 
     # Используется рандомизированный алгоритм Прима
     def generateMap(self):
+        self.height -= 2
+        self.width -= 2
+
         for h in range(self.height):
             self.tiles.append([])
             for w in range(self.width):
@@ -51,11 +73,10 @@ class Map:
 
         while len(to_check) > 0:
             index = random.randint(0, len(to_check) - 1)
-            cell = to_check[index]
+            cell = to_check.pop(index)
             x = cell[0]
             y = cell[1]
             self.tiles[x][y] = NOTHING
-            to_check.pop(index)
 
             d = ['NORTH', 'SOUTH', 'EAST', 'WEST']
             while len(d) > 0:
@@ -120,13 +141,17 @@ class Map:
                 self.tiles[cell[0]][cell[1]] = WALL
         # Здесь заканчивается генерация стен
 
-        # Внешние границы делаем стенами
+        # Добавляем внешние границы -- стены
+        up = []
+        down = []
         for w in range(self.width):
-            self.tiles[0][w] = WALL
-            self.tiles[self.height - 1][w] = WALL
+            up.append(WALL)
+            down.append(WALL)
+        self.tiles = [up] + self.tiles + [down]
+        self.height += 2
         for h in range(self.height):
-            self.tiles[h][0] = WALL
-            self.tiles[h][self.width - 1] = WALL
+            self.tiles[h] = [WALL] + self.tiles[h] + [WALL]
+        self.width += 2
 
         # С заданной вероятностью генерируем ловушки: колючие лозы и лаву
         for h in range(self.height):
@@ -137,6 +162,19 @@ class Map:
                     self.tiles[h][w] = PRICKLY_VINE
                 elif random.randint(0, 100) <= self.p_lava:
                     self.tiles[h][w] = LAVA
+
+        # С заданной вероятностью генерируем врагов: мумий, кузнечиков и заплутавших путников
+        # Они могут стоять на одной клетке с ловушками и вещами
+        for h in range(self.height):
+            for w in range(self.width):
+                if self.tiles[h][w] == WALL:
+                    continue
+                if random.randint(0, 100) <= self.p_mummy:
+                    self.enemy.append(make_mummy(h, w))
+                elif random.randint(0, 100) <= self.p_grasshopper:
+                    self.enemy.append(make_grasshopper(h, w))
+                elif random.randint(0, 100) <= self.p_lost_traveler:
+                    self.enemy.append(make_lost_traveler(h, w))
 
         # Генерируем вещи
         while self.k_poison > 0:
@@ -182,21 +220,29 @@ class Map:
         shift_x = centre_x - height // 2
         shift_y = centre_y - width // 2
 
+        tiles_and_enemy = []
+        for h in range(self.height):
+            tiles_and_enemy.append([])
+            for w in range(self.width):
+                tiles_and_enemy[h].append(self.tiles[h][w].fieldSymbol)
+        for e in self.enemy:
+            tiles_and_enemy[e.coordX][e.coordY] = e.symbol
+
         if mode == 0:
             for h in range(height):
                 for w in range(width):
                     if w + shift_y >= self.width or h + shift_x >= self.height or w + shift_y < 0 or h + shift_x < 0:
                         print(' ', end='')
                     elif h + shift_x == centre_x and w + shift_y == centre_y:
-                        if self.tiles[h + shift_x][w + shift_y] != WALL:
+                        if tiles_and_enemy[h + shift_x][w + shift_y] != WALL.fieldSymbol:
                             print(CHARACTER, end='')
                         else:
                             print("There can't be a hero in the center because there is a wall here!", file=sys.stderr)
-                            print(self.tiles[h + shift_x][w + shift_y].fieldSymbol, end='')
+                            print(tiles_and_enemy[h + shift_x][w + shift_y], end='')
                     elif (h + shift_x, w + shift_y) in self.items:
                         print(self.items[(h + shift_x, w + shift_y)].fieldSymbol, end='')
                     else:
-                        print(self.tiles[h + shift_x][w + shift_y].fieldSymbol, end='')
+                        print(tiles_and_enemy[h + shift_x][w + shift_y], end='')
                 print()
             return
         if mode == 1:
@@ -206,21 +252,23 @@ class Map:
                     if w + shift_y >= self.width or h + shift_x >= self.height or w + shift_y < 0 or h + shift_x < 0:
                         map_color[h][w] = WHITE
                     elif h + shift_x == centre_x and w + shift_y == centre_y:
-                        if self.tiles[h + shift_x][w + shift_y] != WALL:
+                        if tiles_and_enemy[h + shift_x][w + shift_y] != WALL.fieldSymbol:
                             map_color[h][w] = BLUE
                         else:
                             print("There can't be a hero in the center because there is a wall here!", file=sys.stderr)
                             map_color[h][w] = BLACK
                     elif (h + shift_x, w + shift_y) in self.items:
                         map_color[h][w] = ORANGE
-                    elif self.tiles[h + shift_x][w + shift_y] == NOTHING:
+                    elif tiles_and_enemy[h + shift_x][w + shift_y] == NOTHING.fieldSymbol:
                         map_color[h][w] = WHITE
-                    elif self.tiles[h + shift_x][w + shift_y] == WALL:
+                    elif tiles_and_enemy[h + shift_x][w + shift_y] == WALL.fieldSymbol:
                         map_color[h][w] = BLACK
-                    elif self.tiles[h + shift_x][w + shift_y] == PRICKLY_VINE:
+                    elif tiles_and_enemy[h + shift_x][w + shift_y] == PRICKLY_VINE.fieldSymbol:
                         map_color[h][w] = GREEN
-                    elif self.tiles[h + shift_x][w + shift_y] == LAVA:
+                    elif tiles_and_enemy[h + shift_x][w + shift_y] == LAVA.fieldSymbol:
                         map_color[h][w] = RED
+                    else: # Это враги
+                        map_color[h][w] = PURPLE
             plt.imshow(map_color)
             ax = plt.gca()
             ax.axes.xaxis.set_visible(False)
