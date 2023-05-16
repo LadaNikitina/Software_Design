@@ -2,7 +2,6 @@
 # Леднева, Сабирова
 
 ## Диаграмма компонент
-![](https://github.com/LadaNikitina/CLI/blob/cw11/Component_diagram.png)
 
 ## Смысловое ядро:
 
