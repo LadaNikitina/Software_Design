@@ -5,7 +5,7 @@ import chat_pb2_grpc
 import time
 
 def run():
-    channel = grpc.insecure_channel('localhost:50053')
+    channel = grpc.insecure_channel(f'localhost:{input("Enter port: ")}')
     stub = chat_pb2_grpc.ChatServiceStub(channel)
 
     # Register the client
