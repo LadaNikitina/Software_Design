@@ -47,7 +47,7 @@ class ChatServicer(chat_pb2_grpc.ChatServiceServicer):
 def run():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     chat_pb2_grpc.add_ChatServiceServicer_to_server(ChatServicer(), server)
-    server.add_insecure_port('[::]:50053')
+    server.add_insecure_port(f'[::]:{input("Enter port: ")}')
     server.start()
     print("Chat server started...")
     try:
