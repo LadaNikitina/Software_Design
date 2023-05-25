@@ -17,3 +17,6 @@ class Character:
 
     def move_right(self):
         self.coordY += 1
+
+    def set_health(self, new_health):
+        self.health = max(new_health, 0)

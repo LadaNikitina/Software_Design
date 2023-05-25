@@ -214,7 +214,7 @@ class Map:
 
     # mode = 0 -- простая отрисовка в консили символами
     # mode = 1 -- отрисовка цветными квадратиками
-    def drawPieceOfMap(self, centre_x, centre_y, height, width, mode=-1):
+    def drawPieceOfMap(self, centre_x, centre_y, height, width, health, time, mode=-1):
         if mode == -1:
             mode = self.mode
 
@@ -248,6 +248,8 @@ class Map:
                     else:
                         print(tiles_and_enemy[h + shift_x][w + shift_y], end='')
                 print()
+            print(f"HEALTH SCORE: {health}")
+            print(f"TIME LEFT: {time}")
             return 0
         if mode == 1:
             map_color = np.zeros((height, width, 3))
