@@ -3,7 +3,8 @@ class Character:
         self.coordX = coordX
         self.coordY = coordY
         self.health = 100
-        self.items = []
+        self.items = [] # сюда пихать айтемы
+        self.experience = 0
 
     def move_up(self):
         self.coordX -= 1

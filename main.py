@@ -10,8 +10,6 @@ m.generateMap()
 
 # Создание объекта игрока
 player = Character(m.height // 2, m.width // 2,)
-m.drawPieceOfMap(centre_x=m.height // 2, centre_y=m.width // 2, height=20, width=20)
-
 
 # Обработчик нажатия клавиш
 def handle_keypress(event):
