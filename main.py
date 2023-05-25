@@ -19,20 +19,22 @@ def handle_keypress(event):
         _ = system('cls')
         player.move_up()
         m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20)
+        print("Player health:", player.health)
     elif event.name == 'down':
         _ = system('cls')
         player.move_down()
         m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20)
+        print("Player health:", player.health)
     elif event.name == 'left':
         _ = system('cls')
         player.move_left()
         m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20)
+        print("Player health:", player.health)
     elif event.name == 'right':
         _ = system('cls')
         player.move_right()
         m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20)
-
-
+        print("Player health:", player.health)
 
 # Регистрация обработчика для нажатий клавиш
 keyboard.on_press(handle_keypress)
