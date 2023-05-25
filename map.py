@@ -214,12 +214,25 @@ class Map:
 
     def moveEnemies(self):
         for e in self.enemy:
+            movements = [0, 0, 0, 0] # up, down, left, right
             x = e.coordX
             y = e.coordY
 
+            if x < self.height and self.tiles[x + 1][y] != WALL.fieldSymbol:
+                movements[0] = 1
+            if x >= 0 and self.tiles[x - 1][y] != WALL.fieldSymbol:
+                movements[1] = 1
+            if y < self.width and self.tiles[x][y + 1] != WALL.fieldSymbol:
+                movements[2] = 1
+            if y >= 0 and self.tiles[x][y - 1] != WALL.fieldSymbol:
+                movements[3] = 1
 
-            # e.coordX
-            # e.coordY
+            if e.strategy == "defensive":
+                e.defensive_strategy(self.cur_playerX, self.cur_playerY, movements)
+            elif e.strategy == "passive":
+                e.passive_strategy(self.cur_playerX, self.cur_playerY, movements)
+            else:
+                e.agressive_strategy(self.cur_playerX, self.cur_playerY, movements)
 
     def drawMap(self):
         self.drawPieceOfMap(centre_x=self.height // 2, centre_y=self.width // 2, height=self.height, width=self.width)

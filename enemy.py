@@ -29,70 +29,81 @@ class Enemy:
         self.health = max(self.max_health, self.health + hill_value)
         self.change_health()
 
-    def defensive_strategy(self, player_x, player_y, map):
+    def defensive_strategy(self, player_x, player_y, movements):
         # В стратегии "defensive" монстр будет пытаться уйти от игрока
-        # Он будет двигаться в противоположном направлении от игрока, если это безопасно
+        # он будет двигаться в противоположном направлении от игрока, если это безопасно
+        new_x = self.coordX
+        new_y = self.coordY
+        dx = self.coordX - player_x
+        dy = self.coordY - player_y
+        is_update = 0
+        while is_update == 0:
+            if random.randint(0, 100) >= 50:
+                if movements[int(dx > 0)] == 1:
+                    new_x = self.coordX + (2 * int(dx > 0) - 1)
+                    is_update = 1
+                elif movements[1 - int(dx > 0)] == 1:
+                    new_x = self.coordX - (2 * int(dx > 0) - 1)
+                    is_update = 1
+            else:
+                if movements[int(dy > 0) + 2] == 1:
+                    new_y = self.coordY + (2 * int(dy > 0) - 1)
+                    is_update = 1
+                elif movements[3 - int(dy > 0)] == 1:
+                    new_y = self.coordY - (2 * int(dy > 0) - 1)
+                    is_update = 1
+
+        self.coordX = new_x
+        self.coordY = new_y
+
+
+    def aggressive_strategy(self, player_x, player_y, movements):
+        # в стратегии "aggressive" монстр будет преследовать игрока и атаковать его
         new_x = self.coordX
         new_y = self.coordY
         dx = self.coordX - player_x
         dy = self.coordY - player_y
 
-        # Определяем направление, в котором нужно двигаться в противоположном направлении от игрока
-        if random.randint(0, 100) >= 50:
-            if dx > 0:
-                new_x = self.coordX + 1
-            elif dx < 0:
-                new_x = self.coordX - 1
-        else:
-            if dy > 0:
-                new_y = self.coordY + 1
-            elif dy < 0:
-                new_y = self.coordY - 1
-
-        # Проверяем, является ли новая позиция безопасной на карте
-        if map.is_valid_position(new_x, new_y):
-            self.coordX = new_x
-            self.coordY = new_y
-
-    def aggressive_strategy(self, player_x, player_y, map):
-        # В стратегии "aggressive" монстр будет преследовать игрока и атаковать его
-        new_x = self.coordX
-        new_y = self.coordY
-        dx = self.coordX - player_x
-        dy = self.coordY - player_y
-
-        # Проверяем, является ли игрок достаточно близким для атаки
+        # является ли игрок достаточно близким для атаки
         if abs(dx) <= 1 and abs(dy) <= 1:
             self.attack_player(player_x, player_y)
         else:
-            if random.randint(0, 100) >= 50:
-                if dx > 0:
-                    new_x = self.coordX - 1
-                elif dx < 0:
-                    new_x = self.coordX + 1
-            else:
-                if dy > 0:
-                    new_y = self.coordY - 1
-                elif dy < 0:
-                    new_y = self.coordY + 1
+            is_update = 0
+            while is_update == 0:
+                if random.randint(0, 100) >= 50:
+                    if movements[int(dx > 0)] == 1:
+                        new_x = self.coordX - (2 * int(dx > 0) - 1)
+                        is_update = 1
+                    elif movements[1 - int(dx > 0)] == 1:
+                        new_x = self.coordX + (2 * int(dx > 0) - 1)
+                        is_update = 1
+                else:
+                    if movements[int(dy > 0) + 2] == 1:
+                        new_y = self.coordY - (2 * int(dy > 0) - 1)
+                        is_update = 1
+                    elif movements[3 - int(dy > 0)] == 1:
+                        new_y = self.coordY + (2 * int(dy > 0) - 1)
+                        is_update = 1
+
+            self.coordX = new_x
+            self.coordY = new_y
 
 
-    def passive_strategy(self, player_x, player_y, map):
+    def passive_strategy(self, player_x, player_y, movements):
+        is_update = random.randint(0, 4)
+        while movements[is_update] == 0:
+            is_update = random.randint(0, 4)
+
+        if is_update < 3:
+            self.coordX += 1 - 2 * is_update
+        else:
+            self.coordY += 1 - 2 * (is_update - 2)
 
         # В стратегии "passive" монстр будет игнорировать игрока и двигаться случайно по карте
 
-        # Реализуйте здесь логику для случайного движения монстра
-
-    def move_away_from_player(self, player_x, player_y, map):
-
-        # Реализуйте здесь логику движения монстра в противоположном направлении от игрока
-
     def attack_player(self, player_x, player_y):
+        pass
 
-        # Реализуйте здесь атаку монстра на игрока
-
-    def ignore_player(self):
-        # Реализуйте здесь игнорирование игрока
 
 
 # Функции ниже должны возвращать врага с нужными характеристиками
