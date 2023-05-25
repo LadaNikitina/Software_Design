@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from enemy import make_mummy, make_grasshopper, make_lost_traveler
 from field import NOTHING, WALL, PRICKLY_VINE, LAVA
 from item import Poison, Artifact, Treasure
+from os import system, name
 
 CHARACTER = 'I'
 WHITE = [255, 255, 255]
@@ -229,6 +230,9 @@ class Map:
             tiles_and_enemy[e.coordX][e.coordY] = e.symbol
 
         if mode == 0:
+            if tiles_and_enemy[centre_x][centre_y] == WALL.fieldSymbol:
+                return 1
+            _ = system('cls')
             for h in range(height):
                 for w in range(width):
                     if w + shift_y >= self.width or h + shift_x >= self.height or w + shift_y < 0 or h + shift_x < 0:
@@ -244,7 +248,7 @@ class Map:
                     else:
                         print(tiles_and_enemy[h + shift_x][w + shift_y], end='')
                 print()
-            return
+            return 0
         if mode == 1:
             map_color = np.zeros((height, width, 3))
             for h in range(height):
@@ -274,4 +278,4 @@ class Map:
             ax.axes.xaxis.set_visible(False)
             ax.axes.yaxis.set_visible(False)
             plt.show()
-            return
+            return 0

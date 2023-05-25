@@ -1,7 +1,6 @@
 from map import Map
 from character import Character
 import keyboard
-from os import system, name
 
 # написать функцию рандомной генерации позиции по карте
 
@@ -9,30 +8,39 @@ m = Map()
 m.generateMap()
 
 # Создание объекта игрока
-player = Character(m.height // 2, m.width // 2,)
+player = Character(m.height // 2, m.width // 2)
+m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20)
 
 # Обработчик нажатия клавиш
 def handle_keypress(event):
     if event.name == 'up':
-        _ = system('cls')
         player.move_up()
-        m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20)
-        print("Player health:", player.health)
+        result = m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20)
+        if result == 1:
+            player.move_down()
+        else:
+            print("Player health:", player.health)
     elif event.name == 'down':
-        _ = system('cls')
         player.move_down()
-        m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20)
-        print("Player health:", player.health)
+        result = m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20)
+        if result == 1:
+            player.move_up()
+        else:
+            print("Player health:", player.health)
     elif event.name == 'left':
-        _ = system('cls')
         player.move_left()
-        m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20)
-        print("Player health:", player.health)
+        result = m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20)
+        if result == 1:
+            player.move_right()
+        else:
+            print("Player health:", player.health)
     elif event.name == 'right':
-        _ = system('cls')
         player.move_right()
-        m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20)
-        print("Player health:", player.health)
+        result = m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20)
+        if result == 1:
+            player.move_left()
+        else:
+            print("Player health:", player.health)
 
 # Регистрация обработчика для нажатий клавиш
 keyboard.on_press(handle_keypress)
