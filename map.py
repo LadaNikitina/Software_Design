@@ -45,10 +45,13 @@ class Map:
         self.k_treasure = k_treasure
         self.mode = mode
 
+        self.cur_playerX = height // 2
+        self.cur_playerY = width // 2
         self.tiles = []
         self.items = {}
         self.itemsOnMap = []
-        self.enemy = [] # Не словарь, потому что будут перемещаться часто, так что просто отрисовываю поверх всех ловушек
+        self.enemy = []
+        # Не словарь, потому что будут перемещаться часто, так что просто отрисовываю поверх всех ловушек
 
     # Используется рандомизированный алгоритм Прима
     def generateMap(self):
@@ -209,6 +212,15 @@ class Map:
     def getField(self, x, y):
         return self.tiles[x][y]
 
+    def moveEnemies(self):
+        for e in self.enemy:
+            x = e.coordX
+            y = e.coordY
+
+
+            # e.coordX
+            # e.coordY
+
     def drawMap(self):
         self.drawPieceOfMap(centre_x=self.height // 2, centre_y=self.width // 2, height=self.height, width=self.width)
 
@@ -217,7 +229,8 @@ class Map:
     def drawPieceOfMap(self, centre_x, centre_y, height, width, mode=-1):
         if mode == -1:
             mode = self.mode
-
+        self.cur_playerX = centre_x
+        self.cur_playerY = centre_y
         shift_x = centre_x - height // 2
         shift_y = centre_y - width // 2
 
