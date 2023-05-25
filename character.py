@@ -3,15 +3,16 @@ class Character:
         self.coordX = coordX
         self.coordY = coordY
         self.health = 100
+        self.items = []
 
     def move_up(self):
-        self.coordY -= 1
-
-    def move_down(self):
-        self.coordY += 1
-
-    def move_left(self):
         self.coordX -= 1
 
-    def move_right(self):
+    def move_down(self):
         self.coordX += 1
+
+    def move_left(self):
+        self.coordY -= 1
+
+    def move_right(self):
+        self.coordY += 1
