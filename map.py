@@ -218,13 +218,13 @@ class Map:
             x = e.coordX
             y = e.coordY
 
-            if x < self.height and self.tiles[x + 1][y] != WALL.fieldSymbol:
+            if x < self.height - 1 and self.tiles[x + 1][y] != WALL.fieldSymbol:
                 movements[0] = 1
-            if x >= 0 and self.tiles[x - 1][y] != WALL.fieldSymbol:
+            if x > 0 and self.tiles[x - 1][y] != WALL.fieldSymbol:
                 movements[1] = 1
-            if y < self.width and self.tiles[x][y + 1] != WALL.fieldSymbol:
+            if y < self.width - 1 and self.tiles[x][y + 1] != WALL.fieldSymbol:
                 movements[2] = 1
-            if y >= 0 and self.tiles[x][y - 1] != WALL.fieldSymbol:
+            if y > 0 and self.tiles[x][y - 1] != WALL.fieldSymbol:
                 movements[3] = 1
 
             if e.strategy == "defensive":
@@ -232,14 +232,14 @@ class Map:
             elif e.strategy == "passive":
                 e.passive_strategy(self.cur_playerX, self.cur_playerY, movements)
             else:
-                e.agressive_strategy(self.cur_playerX, self.cur_playerY, movements)
+                e.aggressive_strategy(self.cur_playerX, self.cur_playerY, movements)
 
     def drawMap(self):
         self.drawPieceOfMap(centre_x=self.height // 2, centre_y=self.width // 2, height=self.height, width=self.width)
 
     # mode = 0 -- простая отрисовка в консили символами
     # mode = 1 -- отрисовка цветными квадратиками
-    def drawPieceOfMap(self, centre_x, centre_y, height, width, mode=-1):
+    def drawPieceOfMap(self, centre_x, centre_y, height, width, health, time, mode=-1):
         if mode == -1:
             mode = self.mode
         self.cur_playerX = centre_x
@@ -253,6 +253,7 @@ class Map:
             for w in range(self.width):
                 tiles_and_enemy[h].append(self.tiles[h][w].fieldSymbol)
         for e in self.enemy:
+            # print(e.coordX, e.coordY, e.strategy)
             tiles_and_enemy[e.coordX][e.coordY] = e.symbol
 
         if mode == 0:
@@ -274,6 +275,8 @@ class Map:
                     else:
                         print(tiles_and_enemy[h + shift_x][w + shift_y], end='')
                 print()
+            print(f"HEALTH SCORE: {health}")
+            print(f"TIME LEFT: {time}")
             return 0
         if mode == 1:
             map_color = np.zeros((height, width, 3))

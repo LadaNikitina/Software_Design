@@ -1,4 +1,6 @@
 import random
+
+
 class Enemy:
     def __init__(self, symbol, coordX, coordY, experience, default_strategy, health, damage):
         self.symbol = symbol
@@ -6,7 +8,7 @@ class Enemy:
         self.coordY = coordY
         self.experience = experience
         self.default_strategy = default_strategy
-        self.curr_strategy = default_strategy
+        self.strategy = default_strategy
         self.health = health
         self.max_health = health
         self.damage = damage
@@ -17,9 +19,9 @@ class Enemy:
             self.is_alive = False
             # тут по флагу с карты эта дичь удаляется
         elif self.health < 0.2 * self.max_health:
-            self.curr_strategy = "defensive"
+            self.strategy = "defensive"
         elif self.health >= 0.8 * self.max_health:
-            self.curr_strategy = self.default_strategy
+            self.strategy = self.default_strategy
 
     def outer_damage(self, damage):
         self.health = min(0, self.health - damage)
@@ -39,23 +41,22 @@ class Enemy:
         is_update = 0
         while is_update == 0:
             if random.randint(0, 100) >= 50:
-                if movements[int(dx > 0)] == 1:
+                if movements[1 - int(dx > 0)] == 1:
                     new_x = self.coordX + (2 * int(dx > 0) - 1)
                     is_update = 1
-                elif movements[1 - int(dx > 0)] == 1:
+                elif movements[int(dx > 0)] == 1:
                     new_x = self.coordX - (2 * int(dx > 0) - 1)
                     is_update = 1
             else:
-                if movements[int(dy > 0) + 2] == 1:
+                if movements[1 - int(dy > 0) + 2] == 1:
                     new_y = self.coordY + (2 * int(dy > 0) - 1)
                     is_update = 1
-                elif movements[3 - int(dy > 0)] == 1:
+                elif movements[2 + int(dy > 0)] == 1:
                     new_y = self.coordY - (2 * int(dy > 0) - 1)
                     is_update = 1
 
         self.coordX = new_x
         self.coordY = new_y
-
 
     def aggressive_strategy(self, player_x, player_y, movements):
         # в стратегии "aggressive" монстр будет преследовать игрока и атаковать его
@@ -88,13 +89,12 @@ class Enemy:
             self.coordX = new_x
             self.coordY = new_y
 
-
     def passive_strategy(self, player_x, player_y, movements):
-        is_update = random.randint(0, 4)
+        is_update = random.randint(0, 3)
         while movements[is_update] == 0:
-            is_update = random.randint(0, 4)
+            is_update = random.randint(0, 3)
 
-        if is_update < 3:
+        if is_update < 2:
             self.coordX += 1 - 2 * is_update
         else:
             self.coordY += 1 - 2 * (is_update - 2)
@@ -105,9 +105,8 @@ class Enemy:
         pass
 
 
-
-# Функции ниже должны возвращать врага с нужными характеристиками
-# К ним еще символы нужно придумать, берите те, что по ширине как буква латинская, а то бывают символы шире, из-за них карта поедет
+# Функции ниже должны возвращать врага с нужными характеристиками К ним еще символы нужно придумать, берите те,
+# что по ширине как буква латинская, а то бывают символы шире, из-за них карта поедет
 def make_mummy(coordX, coordY):
     symbol = "M"
     experience = 50
@@ -137,4 +136,3 @@ def make_lost_traveler(coordX, coordY):
     damage = 2
     enemy = Enemy(symbol, coordX, coordY, experience, default_strategy, health, damage)
     return enemy
-
