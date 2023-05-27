@@ -1,56 +1,69 @@
+import random
+from enum import Enum
 class Item:
     def __init__(self, symbol, coordX, coordY):
         self.fieldSymbol = symbol
         self.coordX = coordX
         self.coordY = coordY
+        self.name = ""
+
+    def pickUpItem(self, character):
+        character.add_item(self)
+    def applyToCharacter(self, character):
+        pass
+    def returnToInventory(self, character):
+        pass
 
 
-POISON = 'V'
+POTION = 'V'
 ARTIFACT = '□'
 TREASURE = '*'
 
+class PotionType(Enum):
+    MEDICINE = 1 # восстанавливает здоровье
+    VODKA = 2 # увеличивает силу игрока
 
-class Poison(Item):
+class Potion(Item):
     def __init__(self, coordX, coordY):
-        super().__init__(POISON, coordX, coordY)
+        super().__init__(POTION, coordX, coordY)
+        self.potion = random.choice([PotionType.MEDICINE, PotionType.VODKA])
+        self.fieldSymbol = POTION
+        if self.potion == PotionType.MEDICINE:
+            self.name = "medicine"
+        if self.potion == PotionType.VODKA:
+            self.name = "vodka"
 
-        # Здесь должен быть случайный выбор одного из ядов
-        self.stateItem = ''
-        self.timeOfAction = 0
+    def applyToCharacter(self, character):
+        if self.potion == PotionType.MEDICINE:
+            character.set_health(100)
+        if self.potion == PotionType.VODKA:
+            character.set_health(character.power + 5)
 
-    def applyToCharacter(self):
-        raise NotImplementedError()
 
-    def isTimeUp(self):
-        raise NotImplementedError()
-
-    def removeFromCharacter(self):
-        raise NotImplementedError()
-
+class ArtifactType(Enum):
+    CLOWN_COSTUME = 1 # не дает игроку никаких преимуществ, надевая его, игрок просто выглядит глупо.
+    # меняет отображение символа I персонажа на Z
 
 class Artifact(Item):
     def __init__(self, coordX, coordY):
         super().__init__(ARTIFACT, coordX, coordY)
+        self.artifact = random.choice([ArtifactType.CLOWN_COSTUME])
+        if ArtifactType.CLOWN_COSTUME:
+            self.name = "clown_costume"
 
-        # Здесь должен быть случайный выбор одного из артифактов
-        self.stateItem = ''
-        self.timeOfAction = 0
-        self.ifRemovable = False
+    def applyToCharacter(self, character):
+        if self.artifact == ArtifactType.CLOWN_COSTUME:
+            character.change_skin('Z')
 
-    def applyToCharacter(self):
-        raise NotImplementedError()
-
-    def isTimeUp(self):
-        raise NotImplementedError()
-
-    def removeFromCharacter(self):
-        raise NotImplementedError()
-
+    def returnToInventory(self, character):
+        if self.artifact == ArtifactType.CLOWN_COSTUME:
+            character.set_standart_skin()
+            character.add_item(self)
 
 class Treasure(Item):
     def __init__(self, coordX, coordY):
         super().__init__(TREASURE, coordX, coordY)
+        self.cost = 1
 
-        # Здесь должен быть случайный выбор одного из сокровищ
-        # TODO А разве cost не 1 всегда?
-        self.cost = 0
+    def applyToCharacter(self, character):
+        character.add_treasure(self.cost)

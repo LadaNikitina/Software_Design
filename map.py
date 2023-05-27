@@ -1,15 +1,13 @@
 import random
 import sys
-
 import numpy as np
 import matplotlib.pyplot as plt
 
 from enemy import make_mummy, make_grasshopper, make_lost_traveler
 from field import NOTHING, WALL, PRICKLY_VINE, LAVA
-from item import Poison, Artifact, Treasure
+from item import Potion, Artifact, Treasure
 from os import system, name
 
-CHARACTER = 'I'
 WHITE = [255, 255, 255]
 BLACK = [0, 0, 0]
 RED = [255, 0, 0]
@@ -186,7 +184,7 @@ class Map:
             w = random.randint(0, self.width-1)
             if self.tiles[h][w] == WALL:
                 continue
-            poison = Poison(h, w)
+            poison = Potion(h, w)
             self.items[(h, w)] = poison
             self.itemsOnMap.append(poison)
             self.k_poison -= 1
@@ -224,9 +222,9 @@ class Map:
     def drawMap(self):
         self.drawPieceOfMap(centre_x=self.height // 2, centre_y=self.width // 2, height=self.height, width=self.width)
 
-    # mode = 0 -- простая отрисовка в консили символами
+    # mode = 0 -- простая отрисовка в консоли символами
     # mode = 1 -- отрисовка цветными квадратиками
-    def drawPieceOfMap(self, centre_x, centre_y, height, width, health, time, mode=-1):
+    def drawPieceOfMap(self, centre_x, centre_y, height, width, player, time, mode=-1):
         if mode == -1:
             mode = self.mode
         self.cur_playerX = centre_x
@@ -252,7 +250,7 @@ class Map:
                         print(' ', end='')
                     elif h + shift_x == centre_x and w + shift_y == centre_y:
                         if tiles_and_enemy[h + shift_x][w + shift_y] != WALL.fieldSymbol:
-                            print(CHARACTER, end='')
+                            print(player.symbol, end='')
                         else:
                             print("There can't be a hero in the center because there is a wall here!", file=sys.stderr)
                             print(tiles_and_enemy[h + shift_x][w + shift_y], end='')
@@ -261,7 +259,8 @@ class Map:
                     else:
                         print(tiles_and_enemy[h + shift_x][w + shift_y], end='')
                 print()
-            print(f"HEALTH SCORE: {health}")
+            print(f"BACKPACK:{[i.name for i in player.items]}")
+            print(f"HEALTH SCORE: {player.health}")
             print(f"TIME LEFT: {time}")
             return 0
         if mode == 1:

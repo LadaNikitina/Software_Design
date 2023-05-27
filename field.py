@@ -11,8 +11,8 @@ class Trap(Field):
     def __init__(self, symbol):
         super().__init__(symbol)
 
-    def applyDamage(self):
-        raise NotImplementedError()
+    def applyDamage(self, player):
+        player.set_health(player.health - 5)
 
 
 PRICKLY_VINE = Trap('░')
