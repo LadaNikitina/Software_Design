@@ -41,52 +41,42 @@ def main():
 
         if key == 'esc':  # выход из игры
             break
-
-        if key == 'up':
+        elif key == 'up':
             player.move_up()
             result = m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                                       time=time_left, player=player)
             if result == 1:
                 player.move_down()
-            continue
-
-        if key == 'down':
+        elif key == 'down':
             player.move_down()
             result = m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                                       time=time_left, player=player)
             if result == 1:
                 player.move_up()
-            continue
-
-        if key == 'left':
+        elif key == 'left':
             player.move_left()
             result = m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                                       time=time_left, player=player)
             if result == 1:
                 player.move_right()
-            continue
-
-        if key == 'right':
+        elif key == 'right':
             player.move_right()
             result = m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                                       time=time_left, player=player)
             if result == 1:
                 player.move_left()
-            continue
-
-        if key == 'p':  # взять зелье/артефакт/сокровище и положить в инвентарь
+        elif key == 'p':  # взять зелье/артефакт/сокровище и положить в инвентарь
             pass
-        if key == 'b':  # взять первый предмет из рюкзака
+        elif key == 'b':  # взять первый предмет из рюкзака
             pass
-        if key == 'q':  # использовать предмет
+        elif key == 'q':  # использовать предмет
             pass
-        if key == 'r':  # убрать артефакт с себя в инвентарь
+        elif key == 'r':  # убрать артефакт с себя в инвентарь
             pass
 
         field = m.getField(player.coordX, player.coordY)
-        if field.fieldSymbol == PRICKLY_VINE.fieldSymbol or field.fieldSymbol == LAVA.fieldSymbol:  # TODO запустить с дебаггером
+        if field == PRICKLY_VINE or field == LAVA:  # TODO запустить с дебаггером
             player.set_health(player.health - 5)
-
 
     if DEAD:
         print("- - - \nOh, no... You are dead...\n- - - \nGAME OVER\n- - -")
