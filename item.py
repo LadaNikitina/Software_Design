@@ -20,7 +20,7 @@ class Item:
         pass
 
 
-POTION = 'V'
+POTION = '@'
 ARTIFACT = '□'
 TREASURE = '*'
 

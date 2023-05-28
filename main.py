@@ -29,7 +29,8 @@ def main():
     item_ind = 0 # для итерации по объектам рюкзака
 
     while True:
-        time.sleep(0.3)
+        time.sleep(0.1)
+
         time_left = int(END - time.time())
         if time_left <= 0:
             m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20, time=0, player=player)
@@ -49,24 +50,28 @@ def main():
         if key == 'esc':  # выход из игры
             break
         elif key == 'up':
+            m.moveEnemies()
             player.move_up()
             result = m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                                       time=time_left, player=player)
             if result == 1:
                 player.move_down()
         elif key == 'down':
+            m.moveEnemies()
             player.move_down()
             result = m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                                       time=time_left, player=player)
             if result == 1:
                 player.move_up()
         elif key == 'left':
+            m.moveEnemies()
             player.move_left()
             result = m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                                       time=time_left, player=player)
             if result == 1:
                 player.move_right()
         elif key == 'right':
+            m.moveEnemies()
             player.move_right()
             result = m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                                       time=time_left, player=player)
@@ -80,11 +85,13 @@ def main():
                     item = m.items[(player.coordX, player.coordY)]
                     player.items.append(item)
                 m.items.pop((player.coordX, player.coordY))
+                m.moveEnemies()
                 m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                                  time=time_left, player=player)
         elif key == '0':
             if len(player.items) == 0:
                 message = "Backpack is empty."
+                m.moveEnemies()
                 m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                                  time=time_left, player=player, message=message)
             else:
@@ -93,6 +100,7 @@ def main():
                 message = str.upper(item.name)+ ": " + item.descr + "\nPress 1 to see the next item.\n" \
                                                                     "Press 2 to use the item.\n" \
                                                                     "Press any other key to close the backpack"
+                m.moveEnemies()
                 m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                                  time=time_left, player=player, message=message)
         elif key == '1':
@@ -103,12 +111,14 @@ def main():
             message = str.upper(item.name) + ": " + item.descr + "\nPress 1 to see the next item.\n" \
                                                                     "Press 2 to use the item.\n" \
                                                                     "Press any other key to close the backpack"
+            m.moveEnemies()
             m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                              time=time_left, player=player, message=message)
         elif key == '2':
             while item_ind >= len(player.items):
                 item_ind - len(player.items)
             if isinstance(item, Artifact) and player.artifact is not None:
+                m.moveEnemies()
                 m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                                  time=time_left, player=player, message="You can use only one artifact at the same time.")
                 continue
@@ -118,12 +128,14 @@ def main():
             item_ind = 0
             if isinstance(item, Artifact):
                 player.artifact = item
+            m.moveEnemies()
             m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                              time=time_left, player=player, message="Item was used successfully")
         elif key == '3':
             if player.artifact is not None:
                 player.artifact.returnToInventory(player)
                 player.artifact = None
+                m.moveEnemies()
                 m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                              time=time_left, player=player, message="")
 
@@ -131,6 +143,7 @@ def main():
 
         if field == PRICKLY_VINE or field == LAVA:
             player.set_health(player.health - 5)
+            m.moveEnemies()
             m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                              time=time_left, player=player, message="OUCH...")
 
@@ -147,6 +160,7 @@ def main():
                     message = "You found clown costume. Press ENTER to put it in your backpack."
             if isinstance(item, Treasure):
                 message = "You found treasure. Press ENTER to collect it."
+            m.moveEnemies()
             m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
                              time=time_left, player=player, message=message)
 

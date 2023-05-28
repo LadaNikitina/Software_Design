@@ -218,13 +218,13 @@ class Map:
             x = e.coordX
             y = e.coordY
 
-            if x < self.height - 1 and self.tiles[x + 1][y] != WALL.fieldSymbol:
+            if x < self.height - 1 and self.tiles[x + 1][y] != WALL:
                 movements[0] = 1
-            if x > 0 and self.tiles[x - 1][y] != WALL.fieldSymbol:
+            if x > 0 and self.tiles[x - 1][y] != WALL:
                 movements[1] = 1
-            if y < self.width - 1 and self.tiles[x][y + 1] != WALL.fieldSymbol:
+            if y < self.width - 1 and self.tiles[x][y + 1] != WALL:
                 movements[2] = 1
-            if y > 0 and self.tiles[x][y - 1] != WALL.fieldSymbol:
+            if y > 0 and self.tiles[x][y - 1] != WALL:
                 movements[3] = 1
 
             if e.strategy == "defensive":
