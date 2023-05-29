@@ -77,6 +77,26 @@ def main():
                                       time=time_left, player=player)
             if result == 1:
                 player.move_left()
+        elif key == "w":
+            m.damage(player.power, player.coordX - 1, player.coordY)
+            m.moveEnemies()
+            m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
+                             time=time_left, player=player)
+        elif key == "a":
+            m.damage(player.power, player.coordX, player.coordY - 1)
+            m.moveEnemies()
+            m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
+                             time=time_left, player=player)
+        elif key == "s":
+            m.damage(player.power, player.coordX + 1, player.coordY)
+            m.moveEnemies()
+            m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
+                             time=time_left, player=player)
+        elif key == "d":
+            m.damage(player.power, player.coordX, player.coordY + 1)
+            m.moveEnemies()
+            m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,
+                             time=time_left, player=player)
         elif key == 'enter': # берем найденную вещь и кладем в рюкзак
             if (player.coordX, player.coordY) in m.items:
                 if isinstance(item, Treasure):
@@ -105,6 +125,8 @@ def main():
                                  time=time_left, player=player, message=message)
         elif key == '1':
             item_ind += 1
+            if len(player.items) == 0:
+                continue
             if item_ind >= len(player.items):
                 item_ind = 0
             item = player.items[item_ind]
@@ -116,7 +138,7 @@ def main():
                              time=time_left, player=player, message=message)
         elif key == '2':
             while item_ind >= len(player.items):
-                item_ind - len(player.items)
+                item_ind -= len(player.items)
             if isinstance(item, Artifact) and player.artifact is not None:
                 m.moveEnemies()
                 m.drawPieceOfMap(centre_x=player.coordX, centre_y=player.coordY, height=20, width=20,

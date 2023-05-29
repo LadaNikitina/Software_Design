@@ -15,21 +15,23 @@ class Enemy:
         self.is_alive = True
 
     def change_health(self):
-        if self.health <= 0:
+        print("Change")
+        if self.health == 0:
             self.is_alive = False
             # тут по флагу с карты эта дичь удаляется
-        elif self.health < 0.2 * self.max_health:
+        elif self.health < 0.5 * self.max_health:
             self.strategy = "defensive"
         elif self.health >= 0.8 * self.max_health:
             self.strategy = self.default_strategy
 
     def outer_damage(self, damage):
-        self.health = min(0, self.health - damage)
+        self.health = max(0, self.health - damage)
         self.change_health()
 
     def hill(self, hill_value):
-        self.health = max(self.max_health, self.health + hill_value)
-        self.change_health()
+        self.health = min(self.max_health, self.health + hill_value)
+        if self.health != self.max_health:
+            self.change_health()
 
     def defensive_strategy(self, player_x, player_y, movements):
         # В стратегии "defensive" монстр будет пытаться уйти от игрока

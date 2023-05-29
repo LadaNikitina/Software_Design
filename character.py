@@ -5,7 +5,7 @@ class Character:
         self.coordY = coordY
         self.health = 100
         self.items = [] # сюда пихать айтемы
-        self.power = 5
+        self.power = 10
         self.treasures = 0 # для победы нужно собрать сокровища
         self.artifact = None # хранит используемые персонажем артефакты. нужен, чтобы уметь возвращать артефакты в инвентарь
 

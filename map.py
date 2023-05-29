@@ -43,6 +43,7 @@ class Map:
         self.k_artifact = k_artifact
         self.k_treasure = k_treasure
         self.mode = mode
+        self.kills = 0
 
         self.cur_playerX = height // 2
         self.cur_playerY = width // 2
@@ -234,6 +235,17 @@ class Map:
             else:
                 e.aggressive_strategy(self.cur_playerX, self.cur_playerY, movements)
 
+    def damage(self, damage, enemy_X, enemy_Y):
+        for i in range(len(self.enemy)):
+            e = self.enemy[i]
+            if e.coordX == enemy_X and e.coordY == enemy_Y:
+                self.enemy[i].outer_damage(damage)
+
+                if not self.enemy[i].is_alive:
+                    self.enemy.pop(i)
+                    self.kills += 1
+                break
+
     def drawMap(self):
         self.drawPieceOfMap(centre_x=self.height // 2, centre_y=self.width // 2, height=self.height, width=self.width)
 
@@ -252,9 +264,10 @@ class Map:
             tiles_and_enemy.append([])
             for w in range(self.width):
                 tiles_and_enemy[h].append(self.tiles[h][w].fieldSymbol)
-        for e in self.enemy:
+        for i in range(len(self.enemy)):
             # print(e.coordX, e.coordY, e.strategy)
-            tiles_and_enemy[e.coordX][e.coordY] = e.symbol
+            self.enemy[i].hill(1)
+            tiles_and_enemy[self.enemy[i].coordX][self.enemy[i].coordY] = self.enemy[i].symbol
 
         if mode == 0:
             if tiles_and_enemy[centre_x][centre_y] == WALL.fieldSymbol:
