@@ -3,7 +3,7 @@ class Character:
         self.symbol = 'I'
         self.coordX = coordX
         self.coordY = coordY
-        self.health = 100
+        self.health = 300
         self.items = [] # сюда пихать айтемы
         self.power = 10
         self.treasures = 0 # для победы нужно собрать сокровища

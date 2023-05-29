@@ -20,7 +20,7 @@ PURPLE = [139, 0, 255]
 
 class Map:
     # Вероятности для врагов должны отличаться в зависимости от уровня, см. описание в hw8
-    def __init__(self, num_level, height=60, width=100, p_prickly_vine=10, p_lava=10, p_mummy=0, p_grasshopper=0, p_lost_traveler=0, k_poison=20, k_artifact=20, k_treasure=7, mode=0):
+    def __init__(self, num_level, height=60, width=100, p_prickly_vine=10, p_lava=10, p_mummy=4, p_grasshopper=8, p_lost_traveler=12, k_poison=20, k_artifact=20, k_treasure=7, mode=0):
         height = max(height, 4)
         width = max(width, 4)
         p_prickly_vine = max(p_prickly_vine, 0)
@@ -175,11 +175,11 @@ class Map:
             for w in range(self.width):
                 if self.tiles[h][w] == WALL:
                     continue
-                if random.randint(0, 100) <= self.p_mummy:
+                if random.randint(0, 1000) <= self.p_mummy:
                     self.enemy.append(make_mummy(h, w))
-                elif random.randint(0, 100) <= self.p_grasshopper:
+                elif random.randint(0, 1000) <= self.p_grasshopper:
                     self.enemy.append(make_grasshopper(h, w))
-                elif random.randint(0, 100) <= self.p_lost_traveler:
+                elif random.randint(0, 1000) <= self.p_lost_traveler:
                     self.enemy.append(make_lost_traveler(h, w))
 
         # Генерируем вещи
