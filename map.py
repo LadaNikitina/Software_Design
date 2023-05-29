@@ -214,6 +214,7 @@ class Map:
         return self.tiles[x][y]
 
     def moveEnemies(self):
+        damage = 0
         for e in self.enemy:
             movements = [0, 0, 0, 0] # up, down, left, right
             x = e.coordX
@@ -233,7 +234,8 @@ class Map:
             elif e.strategy == "passive":
                 e.passive_strategy(self.cur_playerX, self.cur_playerY, movements)
             else:
-                e.aggressive_strategy(self.cur_playerX, self.cur_playerY, movements)
+                damage += e.aggressive_strategy(self.cur_playerX, self.cur_playerY, movements)
+        return damage
 
     def damage(self, damage, enemy_X, enemy_Y):
         for i in range(len(self.enemy)):

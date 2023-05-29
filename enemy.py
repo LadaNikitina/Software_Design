@@ -69,7 +69,7 @@ class Enemy:
 
         # является ли игрок достаточно близким для атаки
         if abs(dx) <= 1 and abs(dy) <= 1:
-            self.attack_player(player_x, player_y)
+            return self.damage
         else:
             is_update = 0
             while is_update == 0:
@@ -90,6 +90,7 @@ class Enemy:
 
             self.coordX = new_x
             self.coordY = new_y
+        return 0
 
     def passive_strategy(self, player_x, player_y, movements):
         is_update = random.randint(0, 3)
@@ -103,8 +104,6 @@ class Enemy:
 
         # В стратегии "passive" монстр будет игнорировать игрока и двигаться случайно по карте
 
-    def attack_player(self, player_x, player_y):
-        pass
 
 
 # Функции ниже должны возвращать врага с нужными характеристиками К ним еще символы нужно придумать, берите те,
