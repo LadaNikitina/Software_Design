@@ -15,7 +15,6 @@ class Enemy:
         self.is_alive = True
 
     def change_health(self):
-        print("Change")
         if self.health == 0:
             self.is_alive = False
             # тут по флагу с карты эта дичь удаляется

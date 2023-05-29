@@ -20,7 +20,7 @@ PURPLE = [139, 0, 255]
 
 class Map:
     # Вероятности для врагов должны отличаться в зависимости от уровня, см. описание в hw8
-    def __init__(self, height=60, width=100, p_prickly_vine=10, p_lava=10, p_mummy=0, p_grasshopper=0, p_lost_traveler=0, k_poison=20, k_artifact=20, k_treasure=7, mode=0):
+    def __init__(self, num_level, height=60, width=100, p_prickly_vine=10, p_lava=10, p_mummy=0, p_grasshopper=0, p_lost_traveler=0, k_poison=20, k_artifact=20, k_treasure=7, mode=0):
         height = max(height, 4)
         width = max(width, 4)
         p_prickly_vine = max(p_prickly_vine, 0)
@@ -32,6 +32,7 @@ class Map:
         k_artifact = max(k_artifact, 0)
         k_treasure = max(k_treasure, 1)
 
+        self.num_level = num_level
         self.height = height
         self.width = width
         self.p_prickly_vine = p_prickly_vine
@@ -245,7 +246,7 @@ class Map:
 
                 if not self.enemy[i].is_alive:
                     self.enemy.pop(i)
-                    self.kills += 1
+                    # self.kills += 1
                 break
 
     def drawMap(self):
@@ -301,6 +302,7 @@ class Map:
             print(f"POWER SCORE: {player.power}\n")
             print(f"TIME LEFT: {time}")
             print(f"TREASURES FOUND: {player.treasures}/{self.treasures_count}\n")
+            print(f"LEVEL {self.num_level}")
 
 
             print(">>>", message)
